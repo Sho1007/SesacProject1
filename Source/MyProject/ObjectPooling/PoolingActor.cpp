@@ -23,6 +23,11 @@ void APoolingActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+bool APoolingActor::IsActive() const
+{
+	return bIsActivated;
+}
+
 void APoolingActor::Activate()
 {
 	bIsActivated = true;

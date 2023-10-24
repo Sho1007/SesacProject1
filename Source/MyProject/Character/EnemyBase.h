@@ -20,6 +20,8 @@ enum class EEnemyState : uint8
 
 class USkeletalMeshComponent;
 class UCapsuleComponent;
+class UBoxComponent;
+class USphereComponent;
 UCLASS()
 class MYPROJECT_API AEnemyBase : public APoolingActor
 {
@@ -40,21 +42,13 @@ public:
 
 	virtual void Activate() override;
 	virtual void Deactivate() override;
-
+	UFUNCTION()
+	void OnMoveBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnMoveBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 protected:
 	virtual void Die();
 	virtual void Attack();
-private:
-	void AvoidObstacle(FVector& MoveDirection);
-
-	UFUNCTION(BlueprintCallable)
-	void CheckHit();
-	UFUNCTION(BlueprintCallable)
-	void EndAttack();
-
-	virtual float PlayAnimMontage(class UAnimMontage* AnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
-	virtual void StopAnimMontage(class UAnimMontage* AnimMontage = nullptr);
-	
 
 private:
 	// Montage
@@ -65,14 +59,6 @@ private:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Enemy", Meta = (AllowPrivateAccess))
 	float Speed;
 
-	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
-	bool bIsAttacking;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Enemy", Meta = (AllowPrivateAccess))
-	float AttackRange;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Enemy", Meta = (AllowPrivateAccess))
-	float AttackDamage;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Enemy", Meta = (AllowPrivateAccess))
 	float CurrentHealth;
@@ -85,13 +71,33 @@ private:
 	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
 	EEnemyState EnemyState;
 
+	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
+	FVector MoveDirection;
 
+
+	// Attack
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Enemy", Meta = (AllowPrivateAccess))
+	float AttackDamage;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Enemy", Meta = (AllowPrivateAccess))
+	float AttackCoolTime;
+	float CurrentAttackCoolTime;
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
+	bool bIsAttackable;
 
 	// ObstacleCheck
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Enemy", Meta = (AllowPrivateAccess))
 	float ObstacleCheckDistance;
 
+	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
+	TArray<UPrimitiveComponent*> ObstacleComponentArray;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Enemy", Meta = (AllowPrivateAccess))
+	float ImpulsePower;
+
 	// Component
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
+	UBoxComponent* MoveBoxComponent;
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
 	USkeletalMeshComponent* SkeletalMeshComponent;
 

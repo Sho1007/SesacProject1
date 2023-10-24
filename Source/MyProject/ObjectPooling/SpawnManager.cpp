@@ -39,7 +39,10 @@ void ASpawnManager::SpawnEnemy()
 {
 	for (int i = 0; i < EnemyPool.Num(); ++i)
 	{
-		//if ()
+		if (EnemyPool[i]->IsActive() == false)
+		{
+
+		}
 	}
 }
 

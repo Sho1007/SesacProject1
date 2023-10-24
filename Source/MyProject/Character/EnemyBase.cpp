@@ -4,6 +4,8 @@
 #include "../Character/EnemyBase.h"
 
 #include <Components/CapsuleComponent.h>
+#include <Components/BoxComponent.h>
+#include <Components/SphereComponent.h>
 #include <GameFramework/Character.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Engine/DamageEvents.h>
@@ -23,6 +25,9 @@ AEnemyBase::AEnemyBase()
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
 	SkeletalMeshComponent->SetupAttachment(RootComponent);
 	SkeletalMeshComponent->SetCollisionProfileName(TEXT("NoCollision"));
+
+	MoveBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
+	MoveBoxComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -33,6 +38,9 @@ void AEnemyBase::BeginPlay()
 	// Todo : ObjectPooling시에 TargetCharacter Set;
 	
 	TargetCharacter = GetWorld()->GetFirstPlayerController()->GetCharacter();
+
+	MoveBoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::OnMoveBoxBeginOverlap);
+	MoveBoxComponent->OnComponentEndOverlap.AddDynamic(this, &AEnemyBase::OnMoveBoxEndOverlap);
 }
 
 // Called every frame
@@ -46,37 +54,28 @@ void AEnemyBase::Tick(float DeltaTime)
 		return;
 	}
 
-	if (bIsAttacking) return;
+	MoveDirection = TargetCharacter->GetActorLocation() - GetActorLocation();
 
-	FVector MoveDirection = TargetCharacter->GetActorLocation() - GetActorLocation();
+	MoveDirection.Normalize();
+	SetActorRotation(FMath::Lerp(GetActorRotation(), MoveDirection.Rotation(), 0.5f));
 
-	if (MoveDirection.Length() <= AttackRange)
+	AddActorWorldOffset(MoveDirection * Speed * DeltaTime, true);
+
+	FVector ActorLocation = GetActorLocation();
+	for (int i = 0; i < ObstacleComponentArray.Num(); ++i)
 	{
-		EnemyState = EEnemyState::ATTACK;
+		FVector ImpulseDirection = ObstacleComponentArray[i]->GetOwner()->GetActorLocation() - ActorLocation;
+		ImpulseDirection.Normalize();
+		ObstacleComponentArray[i]->AddImpulse(ImpulseDirection * ImpulsePower * Speed);
 	}
-	else
+	if (bIsAttackable)
 	{
-		EnemyState = EEnemyState::CHASE;
-	}
-
-
-	switch (EnemyState)
-	{
-	case EEnemyState::CHASE:
+		CurrentAttackCoolTime += DeltaTime;
+		if (CurrentAttackCoolTime >= AttackCoolTime)
 		{
-		SetActorRotation(FMath::Lerp(GetActorRotation(), MoveDirection.Rotation(), 0.5f));
-		AvoidObstacle(MoveDirection);
-		AddActorWorldOffset(MoveDirection * Speed * DeltaTime, true);
-		}
-		break;
-	case EEnemyState::ATTACK:
-
-		if (AttackMontage)
-		{
+			CurrentAttackCoolTime -= AttackCoolTime;
 			Attack();
 		}
-
-		break;
 	}
 }
 
@@ -98,17 +97,20 @@ void AEnemyBase::Activate()
 
 	SetActorTickEnabled(bIsActivated);
 	SetActorHiddenInGame(!bIsActivated);
+	ObstacleComponentArray.Empty();
 	CapsuleComponent->SetCollisionProfileName(TEXT("Enemy"));
+	CapsuleComponent->SetSimulatePhysics(true);
 }
 
 void AEnemyBase::Deactivate()
 {
 	Super::Deactivate();
 
-	StopAnimMontage();
-	bIsAttacking = false;
+	bIsAttackable = false;
+	CurrentAttackCoolTime = 0.0f;
 	SetActorTickEnabled(bIsActivated);
 	SetActorHiddenInGame(!bIsActivated);
+	CapsuleComponent->SetSimulatePhysics(false);
 	CapsuleComponent->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
@@ -119,104 +121,31 @@ void AEnemyBase::Die()
 
 void AEnemyBase::Attack()
 {
-	bIsAttacking = true;
-	PlayAnimMontage(AttackMontage);
+	TargetCharacter->TakeDamage(AttackDamage, FDamageEvent(UDamageType::StaticClass()), nullptr, this);
 }
 
-void AEnemyBase::AvoidObstacle(FVector& MoveDirection)
+void AEnemyBase::OnMoveBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	FHitResult OutHit;
-	FVector Start = GetActorLocation() + (GetActorForwardVector() * 10.0f);
-	FVector End = Start + (GetActorForwardVector() * 22.0f);
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
-	// 시작 방향은 타겟
-	MoveDirection = GetActorForwardVector();
-
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-	// 보이는 것들을 회피
-	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Visibility));
-	// 자기 자신과 타겟은 회피 안함
-	TArray<AActor*> ActorsToIngore;
-	ActorsToIngore.Add(this);
-	ActorsToIngore.Add(TargetCharacter);
-
-	// 만약 앞에 장애물이 있다면
-	if (UKismetSystemLibrary::SphereTraceSingle(GetWorld(), Start, End, 22.0f, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, ActorsToIngore, EDrawDebugTrace::ForOneFrame, OutHit, true))
+	if (ACharacter* Character = Cast<ACharacter>(OtherActor))
 	{
-		// 오른쪽으로 한번 더 검사 후 있다면
-		UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::AvoidObstacle) HitActor : %s"), *OutHit.GetActor()->GetName());
-		if (UKismetSystemLibrary::SphereTraceSingle(GetWorld(), Start, End + (GetActorRightVector() * 22.0f), 22.0f, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, ActorsToIngore, EDrawDebugTrace::ForOneFrame, OutHit, true))
-		{
-			// 방향을 왼쪽으로
-			MoveDirection = -GetActorRightVector();
-		}
-		else
-		{
-			// 오른쪽에 장애물이 없다면 방향을 오른쪽으로
-			MoveDirection = GetActorRightVector();
-		}
+		bIsAttackable = true;
 	}
-	// 후 벡터 정규화 
-	MoveDirection.Normalize();
-}
-
-void AEnemyBase::CheckHit()
-{
-	FHitResult OutHit;
-	FVector Start = GetActorLocation() + (GetActorForwardVector() * 30);
-	FVector End = Start + (GetActorForwardVector() * AttackRange);
-
-	FCollisionObjectQueryParams OQParams;
-	// 플레이어를 체크 대상으로 등록
-	OQParams.AddObjectTypesToQuery(ECC_GameTraceChannel2);
-
-	//DrawDebugLine(GetWorld(), Start, End, FColor::Yellow, false, 0.5f);
-	if (GetWorld()->LineTraceSingleByObjectType(OutHit, Start, End, OQParams))
+	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::CheckHit) Hit Actor : %s"), *OutHit.GetActor()->GetName());
-		// 콜리전이 일어났다면 데미지 적용
-		OutHit.GetActor()->TakeDamage(AttackDamage, FDamageEvent(UDamageType::StaticClass()), nullptr, this);
+		ObstacleComponentArray.Add(OtherComp);
 	}
 }
 
-
-void AEnemyBase::EndAttack()
+void AEnemyBase::OnMoveBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	bIsAttacking = false;
-}
-
-// 최적화를 위해 Character가 아닌 Actor로 구현하여 PlayAnimMontage 함수를 Character 에서 가져옴
-float AEnemyBase::PlayAnimMontage(UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName)
-{
-	UAnimInstance* AnimInstance = (SkeletalMeshComponent) ? SkeletalMeshComponent->GetAnimInstance() : nullptr;
-	if (AnimMontage && AnimInstance)
+	if (ACharacter* Character = Cast<ACharacter>(OtherActor))
 	{
-		float const Duration = AnimInstance->Montage_Play(AnimMontage, InPlayRate);
-
-		if (Duration > 0.f)
-		{
-			// Start at a given Section.
-			if (StartSectionName != NAME_None)
-			{
-				AnimInstance->Montage_JumpToSection(StartSectionName, AnimMontage);
-			}
-
-			return Duration;
-		}
+		bIsAttackable = false;
 	}
-
-	return 0.f;
-}
-
-void AEnemyBase::StopAnimMontage(UAnimMontage* AnimMontage)
-{
-	UAnimInstance* AnimInstance = (SkeletalMeshComponent) ? SkeletalMeshComponent->GetAnimInstance() : nullptr;
-	UAnimMontage* MontageToStop = (AnimMontage) ? AnimMontage : (AnimInstance) ? AnimInstance->GetCurrentActiveMontage() : nullptr;
-	bool bShouldStopMontage = AnimInstance && MontageToStop && !AnimInstance->Montage_GetIsStopped(MontageToStop);
-
-	if (bShouldStopMontage)
+	else
 	{
-		AnimInstance->Montage_Stop(MontageToStop->BlendOut.GetBlendTime(), MontageToStop);
+		ObstacleComponentArray.Remove(OtherComp);
 	}
 }
