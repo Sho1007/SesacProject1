@@ -88,7 +88,11 @@ float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 {
 	float Result = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
+	
+
 	CurrentHealth -= DamageAmount;
+
+	UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::TakeDamage) Remain Health : %f"), CurrentHealth);
 
 	if (CurrentHealth <= 0.0f) Die();
 
