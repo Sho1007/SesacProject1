@@ -10,6 +10,8 @@
 #include <Kismet/KismetSystemLibrary.h>
 #include <Engine/DamageEvents.h>
 
+#include "../ObjectPooling/SpawnManager.h"
+
 #include "UObject/ObjectPtr.h"
 
 // Sets default values
@@ -34,11 +36,6 @@ AEnemyBase::AEnemyBase()
 void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Todo : ObjectPooling½Ã¿¡ TargetCharacter Set;
-	
-	TargetCharacter = GetWorld()->GetFirstPlayerController()->GetCharacter();
-
 	MoveBoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::OnMoveBoxBeginOverlap);
 	MoveBoxComponent->OnComponentEndOverlap.AddDynamic(this, &AEnemyBase::OnMoveBoxEndOverlap);
 }
@@ -55,11 +52,18 @@ void AEnemyBase::Tick(float DeltaTime)
 	}
 
 	MoveDirection = TargetCharacter->GetActorLocation() - GetActorLocation();
-
-	MoveDirection.Normalize();
 	SetActorRotation(FMath::Lerp(GetActorRotation(), MoveDirection.Rotation(), 0.5f));
 
-	AddActorWorldOffset(MoveDirection * Speed * DeltaTime, true);
+	if (MoveDirection.Length() > RespawnDistance)
+	{
+		SpawnManager->RespawnEnemy(PoolingIndex);
+		return;
+	}
+	if (MoveDirection.Length() > 100.0f)
+	{
+		MoveDirection.Normalize();
+		AddActorWorldOffset(MoveDirection * Speed * DeltaTime, true);
+	}
 
 	FVector ActorLocation = GetActorLocation();
 	for (int i = 0; i < ObstacleComponentArray.Num(); ++i)
@@ -95,8 +99,7 @@ void AEnemyBase::Activate()
 {
 	Super::Activate();
 
-	SetActorTickEnabled(bIsActivated);
-	SetActorHiddenInGame(!bIsActivated);
+	CurrentHealth = MaxHealth;
 	ObstacleComponentArray.Empty();
 	CapsuleComponent->SetCollisionProfileName(TEXT("Enemy"));
 	CapsuleComponent->SetSimulatePhysics(true);
@@ -107,15 +110,14 @@ void AEnemyBase::Deactivate()
 	Super::Deactivate();
 
 	bIsAttackable = false;
-	CurrentAttackCoolTime = 0.0f;
-	SetActorTickEnabled(bIsActivated);
-	SetActorHiddenInGame(!bIsActivated);
+	CurrentAttackCoolTime = AttackCoolTime;
 	CapsuleComponent->SetSimulatePhysics(false);
 	CapsuleComponent->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
 void AEnemyBase::Die()
 {
+	SpawnManager->SpawnJewel(GetActorLocation());
 	Deactivate();
 }
 
@@ -148,4 +150,11 @@ void AEnemyBase::OnMoveBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, A
 	{
 		ObstacleComponentArray.Remove(OtherComp);
 	}
+}
+
+void AEnemyBase::Init(ASpawnManager* NewSpawnManager, int32 NewPoolingIndex)
+{
+	Super::Init(NewSpawnManager, NewPoolingIndex);
+
+	TargetCharacter = SpawnManager->GetTargetCharacter();
 }

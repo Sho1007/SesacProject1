@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "PoolingActor.generated.h"
 
+class ASpawnManager;
 UCLASS()
 class MYPROJECT_API APoolingActor : public AActor
 {
@@ -28,7 +29,15 @@ public:
 	virtual void Activate();
 	virtual void Deactivate();
 
+	virtual void Init(ASpawnManager* NewSpawnManager, int32 NewPoolingIndex);
+
 protected:
+	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "PoolingActor", Meta = (AllowPrivateAccess))
+	int32 PoolingIndex;
+
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "PoolingActor", Meta = (AllowPrivateAccess))
 	bool bIsActivated;
+
+	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "PoolingActor", Meta = (AllowPrivateAccess))
+	ASpawnManager* SpawnManager;
 };
