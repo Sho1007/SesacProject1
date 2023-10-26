@@ -7,6 +7,7 @@
 #include "SpawnManager.generated.h"
 
 class APoolingActor;
+class UDataTable;
 UCLASS()
 class MYPROJECT_API ASpawnManager : public AActor
 {
@@ -26,7 +27,7 @@ public:
 
 	void RespawnEnemy(int32 PoolingIndex);
 
-	void SpawnJewel(FVector SpawnLocation);
+	void SpawnProjectile(FVector StartLocation, FRotator StartRotation, FName ProjectileName);
 
 public:
 	// Getter / Setter
@@ -36,11 +37,15 @@ private:
 	void SpawnEnemy();
 	void PrepareEnemy();
 
-	void PrepareJewel();
+	void PrepareProjectile();
 
 	FVector GetSpawnLocation();
 
 private:
+	// Data Table
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Spawn Manager", Meta = (AllowPrivateAccess))
+	UDataTable* ProjectileDataTable;
+
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "Spawn Manager", Meta = (AllowPrivateAccess))
 	ACharacter* TargetCharacter;
 
@@ -57,10 +62,10 @@ private:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enemy Spawn", Meta = (AllowPrivateAccess))
 	TSubclassOf<APoolingActor> EnemyClass;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Jewel Spawn", Meta = (AllowPrivateAccess))
-	int JewelPoolingCount;
-	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "Jewel Spawn", Meta = (AllowPrivateAccess))
-	TArray<APoolingActor*> JewelPool;
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Jewel Spawn", Meta = (AllowPrivateAccess))
-	TSubclassOf<APoolingActor> JewelClass;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Projectile Spawn", Meta = (AllowPrivateAccess))
+	int ProjectilePoolingCount;
+	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "Projectile Spawn", Meta = (AllowPrivateAccess))
+	TArray<APoolingActor*> ProjectilePool;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile Spawn", Meta = (AllowPrivateAccess))
+	TSubclassOf<APoolingActor> ProjectileClass;
 };

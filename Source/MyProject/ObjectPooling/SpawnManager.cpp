@@ -4,9 +4,12 @@
 #include "../ObjectPooling/SpawnManager.h"
 
 #include <EngineUtils.h>
+#include <Engine/DataTable.h>
 #include "PoolingActor.h"
+#include "Engine/DataTable.h"
 #include "GameFramework/Character.h"
 #include "MyProject/Character/EnemyBase.h"
+#include "ProjectileBase.h"
 
 // Sets default values
 ASpawnManager::ASpawnManager()
@@ -31,7 +34,7 @@ void ASpawnManager::BeginPlay()
 	}
 
 	PrepareEnemy();
-	PrepareJewel();
+	PrepareProjectile();
 }
 
 // Called every frame
@@ -55,20 +58,19 @@ void ASpawnManager::RespawnEnemy(int32 PoolingIndex)
 	EnemyPool[PoolingIndex]->SetActorLocation(GetSpawnLocation());
 }
 
-void ASpawnManager::SpawnJewel(FVector SpawnLocation)
+void ASpawnManager::SpawnProjectile(FVector StartLocation, FRotator StartRotation, FName ProjectileName)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::SpawnJewel"));
-	for (int i = 0; i < JewelPool.Num(); ++i)
+	for (int i = 0; i < ProjectilePool.Num(); ++i)
 	{
-		if (JewelPool[i]->IsActive() == false)
+		if (ProjectilePool[i]->IsActive() == false)
 		{
-			JewelPool[i]->SetActorLocation(SpawnLocation);
-			JewelPool[i]->Activate();
-			return;
+			// Find Projectile Information From DataTable
+			Cast<AProjectileBase>(ProjectilePool[i])->SetProjectileData(ProjectileDataTable->FindRow<FProjectileData>(ProjectileName, ""));
+			ProjectilePool[i]->SetActorLocationAndRotation(StartLocation, StartRotation);
+			ProjectilePool[i]->Activate();
+			break;
 		}
 	}
-
-	UE_LOG(LogTemp, Error, TEXT("ASpawnManager::SpawnJewel) JewelCount is not enough"));
 }
 
 ACharacter* ASpawnManager::GetTargetCharacter() const
@@ -89,7 +91,7 @@ void ASpawnManager::SpawnEnemy()
 		}
 	}
 
-	UE_LOG(LogTemp, Error, TEXT("ASpawnManager::SpawnJewel) EnemyCount is not enough"));
+	//UE_LOG(LogTemp, Error, TEXT("ASpawnManager::SpawnJewel) EnemyCount is not enough"));
 }
 
 void ASpawnManager::PrepareEnemy()
@@ -118,28 +120,28 @@ void ASpawnManager::PrepareEnemy()
 	}
 }
 
-void ASpawnManager::PrepareJewel()
+void ASpawnManager::PrepareProjectile()
 {
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::PrepareJewel) World is nullptr"));
+		UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::PrepareProjectile) World is nullptr"));
 		return;
 	}
-	if (JewelClass == nullptr)
+	if (ProjectileClass == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::PrepareJewel) JewelClass is nullptr"));
+		UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::PrepareProjectile) ProjectileClass is nullptr"));
 		return;
 	}
 
 	FActorSpawnParameters Params;
 	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	for (int i = 0; i < JewelPoolingCount; ++i)
+	for (int i = 0; i < ProjectilePoolingCount; ++i)
 	{
-		APoolingActor* Jewel = World->SpawnActor<APoolingActor>(JewelClass, Params);
-		Jewel->Deactivate();
-		JewelPool.Add(Jewel);
+		APoolingActor* Projectile = World->SpawnActor<APoolingActor>(ProjectileClass, Params);
+		Projectile->Deactivate();
+		ProjectilePool.Add(Projectile);
 	}
 }
 

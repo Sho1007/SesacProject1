@@ -90,6 +90,8 @@ float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 
 	CurrentHealth -= DamageAmount;
 
+	UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::TakeDamage) Remain Health : %f"), CurrentHealth);
+
 	if (CurrentHealth <= 0.0f) Die();
 
 	return Result;
@@ -117,7 +119,23 @@ void AEnemyBase::Deactivate()
 
 void AEnemyBase::Die()
 {
-	SpawnManager->SpawnJewel(GetActorLocation());
+	if (JewelClass)
+	{
+		FActorSpawnParameters Params;
+		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		AActor* Jewel = GetWorld()->SpawnActor<AActor>(JewelClass, GetActorLocation(), GetActorRotation(), Params);
+		if (Jewel == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::Die) Failed to spawn jewel"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::Die) Spawn Jewel : %s"), *Jewel->GetName());
+		}
+
+
+	}
+
 	Deactivate();
 }
 

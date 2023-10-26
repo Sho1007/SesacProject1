@@ -23,7 +23,7 @@ void AProjectileBase::OnHitBoxBeginOverlap(UPrimitiveComponent* OverlappedCompon
 
 	OtherActor->TakeDamage(Damage, FDamageEvent(UDamageType::StaticClass()), GetWorld()->GetFirstPlayerController(), this);
 
-	if (--PenetrateCount <= 0) Destroy();
+	if (PenetrateCount != -1 && --PenetrateCount <= 0) Deactivate();
 }
 
 void AProjectileBase::BeginPlay()
@@ -37,5 +37,33 @@ void AProjectileBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
 	AddActorWorldOffset( GetActorForwardVector() * Speed * DeltaTime, true);
+
+	if (Distance != -1.0f)
+	{
+		CurrentDistance += Speed * DeltaTime;
+		if (CurrentDistance >= Distance)
+		{
+			Deactivate();
+		}
+	}
+}
+
+void AProjectileBase::SetProjectileData(FProjectileData* NewProjectileData)
+{
+	if (NewProjectileData == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("AProjectileBase::SetProjectileData) ProjectileData is nullptr"));
+		return;
+	}
+	StaticMeshComponent->SetStaticMesh(NewProjectileData->StaticMesh);
+	StaticMeshComponent->SetMaterial(0, NewProjectileData->Material);
+	StaticMeshComponent->SetRelativeScale3D(FVector(NewProjectileData->MeshScale));
+	StaticMeshComponent->SetRelativeRotation(NewProjectileData->MeshRotation);
+	Speed = NewProjectileData->Speed;
+	Damage = NewProjectileData->Damage;
+	PenetrateCount = NewProjectileData->PenetrateCount;
+	Distance = NewProjectileData->Distance;
+	CurrentDistance = 0.0f;
 }
