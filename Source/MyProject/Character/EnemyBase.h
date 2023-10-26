@@ -54,6 +54,9 @@ protected:
 	virtual void Attack();
 
 private:
+	// Loot
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
+	TSubclassOf<AActor> JewelClass;
 	// Montage
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
 	UAnimMontage* AttackMontage;
