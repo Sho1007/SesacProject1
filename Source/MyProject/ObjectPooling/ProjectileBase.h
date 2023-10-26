@@ -54,6 +54,9 @@ public:
 
 	virtual void SetProjectileData(FProjectileData* NewProjectileData);
 
+	virtual void Activate() override;
+	virtual void Deactivate() override;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile", Meta = (AllowPrivateAccess))
 	float Distance;

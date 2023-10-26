@@ -14,12 +14,13 @@ AProjectileBase::AProjectileBase()
 
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	StaticMeshComponent->SetupAttachment(RootComponent);
+	StaticMeshComponent->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
 void AProjectileBase::OnHitBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("AProjectileBase::OnHitBoxBeginOverlap) Overlapped Actor : %s"), *OtherActor->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("AProjectileBase::OnHitBoxBeginOverlap) this : %s, Overlapped Actor : %s"), *GetName(), *OtherActor->GetName());
 
 	OtherActor->TakeDamage(Damage, FDamageEvent(UDamageType::StaticClass()), GetWorld()->GetFirstPlayerController(), this);
 
@@ -66,4 +67,17 @@ void AProjectileBase::SetProjectileData(FProjectileData* NewProjectileData)
 	PenetrateCount = NewProjectileData->PenetrateCount;
 	Distance = NewProjectileData->Distance;
 	CurrentDistance = 0.0f;
+}
+
+void AProjectileBase::Activate()
+{
+	Super::Activate();
+	HitBox->SetCollisionProfileName(TEXT("Projectile"));
+}
+
+void AProjectileBase::Deactivate()
+{
+	Super::Deactivate();
+
+	HitBox->SetCollisionProfileName(TEXT("NoCollision"));
 }

@@ -52,11 +52,11 @@ public:
 protected:
 	virtual void Die();
 	virtual void Attack();
-
+	virtual void Respawn();
 private:
 	// Loot
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
-	TSubclassOf<AActor> JewelClass;
+	TArray<TSubclassOf<AActor>> LootItemClassArray;
 	// Montage
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
 	UAnimMontage* AttackMontage;
