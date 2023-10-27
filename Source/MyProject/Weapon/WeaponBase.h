@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "WeaponBase.generated.h"
 
+
+class UTexture2D;
 UCLASS()
 class MYPROJECT_API AWeaponBase : public AActor
 {
@@ -26,7 +28,16 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	bool IsPossibleToLevelUp() const;
+
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	UTexture2D* WeaponImage;
+	UPROPERTY(EditDefaultsOnly)
+	int CurrentLevel;
+	UPROPERTY(EditDefaultsOnly)
+	int MaxLevel;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float AttackCoolTime;
 	float CurrentAttackCoolTime;

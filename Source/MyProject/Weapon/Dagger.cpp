@@ -12,7 +12,7 @@ void ADagger::Init(ASpawnManager* NewSpawnManager)
 
 void ADagger::SpawnDagger()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ADagger::SpawnDagger : %d"), CurrentProjectileCount);
+	//UE_LOG(LogTemp, Warning, TEXT("ADagger::SpawnDagger : %d"), CurrentProjectileCount);
 	if (SpawnManager) SpawnManager->SpawnProjectile(GetActorLocation() + FVector(0, FMath::RandRange(-75.0f, 75.0f), 90), GetActorRotation(), TEXT("Dagger"));
 
 	if (--CurrentProjectileCount == 0) GetWorld()->GetTimerManager().ClearTimer(AttackHandle);

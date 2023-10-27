@@ -35,6 +35,7 @@ void ASpawnManager::BeginPlay()
 
 	PrepareEnemy();
 	PrepareProjectile();
+	PrepareBoss();
 }
 
 // Called every frame
@@ -49,6 +50,14 @@ void ASpawnManager::Tick(float DeltaTime)
 		CurrentEnemySpawnCool = 0.0f;
 		SpawnEnemy();
 	}
+
+	// Boss Spawn Cool
+	CurrentBossSpawnCool += DeltaTime;
+	if (CurrentBossSpawnCool >= BossSpawnCool)
+	{
+		CurrentBossSpawnCool -= BossSpawnCool;
+		SpawnBoss();
+	}
 }
 
 void ASpawnManager::RespawnEnemy(int32 PoolingIndex)
@@ -56,6 +65,13 @@ void ASpawnManager::RespawnEnemy(int32 PoolingIndex)
 	if (PoolingIndex < 0 || PoolingIndex >= EnemyPool.Num()) return;
 
 	EnemyPool[PoolingIndex]->SetActorLocation(GetSpawnLocation());
+}
+
+void ASpawnManager::RespawnBoss(int32 PoolingIndex)
+{
+	if (PoolingIndex < 0 || PoolingIndex >= BossPool.Num()) return;
+
+	BossPool[PoolingIndex]->SetActorLocation(GetSpawnLocation() + FVector(0, 0, 100));
 }
 
 void ASpawnManager::SpawnProjectile(FVector StartLocation, FRotator StartRotation, FName ProjectileName)
@@ -99,12 +115,12 @@ void ASpawnManager::PrepareEnemy()
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::PrepareMonster) World is nullptr"));
+		UE_LOG(LogTemp, Error, TEXT("ASpawnManager::PrepareMonster) World is nullptr"));
 		return;
 	}
 	if (EnemyClass == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::PrepareMonster) EnemyClass is nullptr"));
+		UE_LOG(LogTemp, Error, TEXT("ASpawnManager::PrepareMonster) EnemyClass is nullptr"));
 		return;
 	}
 
@@ -125,12 +141,12 @@ void ASpawnManager::PrepareProjectile()
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::PrepareProjectile) World is nullptr"));
+		UE_LOG(LogTemp, Error, TEXT("ASpawnManager::PrepareProjectile) World is nullptr"));
 		return;
 	}
 	if (ProjectileClass == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::PrepareProjectile) ProjectileClass is nullptr"));
+		UE_LOG(LogTemp, Error, TEXT("ASpawnManager::PrepareProjectile) ProjectileClass is nullptr"));
 		return;
 	}
 
@@ -145,9 +161,55 @@ void ASpawnManager::PrepareProjectile()
 	}
 }
 
+void ASpawnManager::SpawnBoss()
+{
+	for (int i = 0; i < BossPool.Num(); ++i)
+	{
+		if (BossPool[i]->IsActive() == false)
+		{
+			BossPool[i]->SetActorLocation(GetSpawnLocation() + FVector(0, 0, 100));
+			BossPool[i]->Activate();
+			return;
+		}
+	}
+}
+
+void ASpawnManager::PrepareBoss()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ASpawnManager::PrepareBoss) World is nullptr"));
+		return;
+	}
+	if (BossClass == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ASpawnManager::PrepareBoss) BossClass is nullptr"));
+		return;
+	}
+
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	for (int i = 0; i < BossPoolingCount; ++i)
+	{
+		APoolingActor* Boss = World->SpawnActor<APoolingActor>(BossClass, Params);
+		if (AEnemyBase* EnemyBase = Cast<AEnemyBase>(Boss)) EnemyBase->Init(this, i);
+		Boss->Deactivate();
+		BossPool.Add(Boss);
+	}
+}
+
 FVector ASpawnManager::GetSpawnLocation()
 {
+	if (TargetCharacter == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::GetSpawnLocation) TargetCharacter is nullptr"));
+		return FVector::ZeroVector;
+	}
+
 	FVector SpawnLocation = TargetCharacter->GetActorLocation();
+	SpawnLocation.Z = 90.0f;
 
 	FVector Velocity = TargetCharacter->GetVelocity();
 	if (Velocity == FVector::ZeroVector)

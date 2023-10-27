@@ -15,7 +15,7 @@ AWeaponBase::AWeaponBase()
 
 void AWeaponBase::Attack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("AWeaponBase::Attack"));
+	//UE_LOG(LogTemp, Warning, TEXT("AWeaponBase::Attack"));
 }
 
 // Called when the game starts or when spawned
@@ -36,4 +36,9 @@ void AWeaponBase::Tick(float DeltaTime)
 		CurrentAttackCoolTime -= AttackCoolTime;
 		Attack();
 	}
+}
+
+bool AWeaponBase::IsPossibleToLevelUp() const
+{
+	return CurrentLevel < MaxLevel;
 }

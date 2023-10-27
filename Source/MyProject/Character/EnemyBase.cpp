@@ -56,7 +56,7 @@ void AEnemyBase::Tick(float DeltaTime)
 
 	if (MoveDirection.Length() > RespawnDistance)
 	{
-		SpawnManager->RespawnEnemy(PoolingIndex);
+		Respawn();
 		return;
 	}
 	if (MoveDirection.Length() > 100.0f)
@@ -71,6 +71,7 @@ void AEnemyBase::Tick(float DeltaTime)
 		FVector ImpulseDirection = ObstacleComponentArray[i]->GetOwner()->GetActorLocation() - ActorLocation;
 		ImpulseDirection.Normalize();
 		ObstacleComponentArray[i]->AddImpulse(ImpulseDirection * ImpulsePower * Speed);
+		UE_LOG(LogTemp, Error, TEXT("AEnemyBase::Tick) Impulse To %s"), *ObstacleComponentArray[i]->GetName());
 	}
 	if (bIsAttackable)
 	{
@@ -119,21 +120,15 @@ void AEnemyBase::Deactivate()
 
 void AEnemyBase::Die()
 {
-	if (JewelClass)
+	if (LootItemClassArray.Num() > 0)
 	{
 		FActorSpawnParameters Params;
-		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		AActor* Jewel = GetWorld()->SpawnActor<AActor>(JewelClass, GetActorLocation(), GetActorRotation(), Params);
-		if (Jewel == nullptr)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::Die) Failed to spawn jewel"));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::Die) Spawn Jewel : %s"), *Jewel->GetName());
-		}
+		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-
+		for (int i = 0; i < LootItemClassArray.Num(); ++i)
+		{
+			if (LootItemClassArray[i]) AActor* LootItem = GetWorld()->SpawnActor<AActor>(LootItemClassArray[i], GetActorLocation(), GetActorRotation(), Params);
+		}
 	}
 
 	Deactivate();
@@ -144,8 +139,13 @@ void AEnemyBase::Attack()
 	TargetCharacter->TakeDamage(AttackDamage, FDamageEvent(UDamageType::StaticClass()), nullptr, this);
 }
 
+void AEnemyBase::Respawn()
+{
+	SpawnManager->RespawnEnemy(PoolingIndex);
+}
+
 void AEnemyBase::OnMoveBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (ACharacter* Character = Cast<ACharacter>(OtherActor))
 	{
@@ -163,6 +163,7 @@ void AEnemyBase::OnMoveBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, A
 	if (ACharacter* Character = Cast<ACharacter>(OtherActor))
 	{
 		bIsAttackable = false;
+		CurrentAttackCoolTime = AttackCoolTime;
 	}
 	else
 	{
