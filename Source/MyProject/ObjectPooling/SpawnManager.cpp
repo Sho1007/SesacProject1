@@ -214,8 +214,10 @@ FVector ASpawnManager::GetSpawnLocation()
 	FVector Velocity = TargetCharacter->GetVelocity();
 	if (Velocity == FVector::ZeroVector)
 	{
-		SpawnLocation += TargetCharacter->GetActorForwardVector() * SpawnDistance;
-		SpawnLocation = SpawnLocation.RotateAngleAxis(FMath::RandRange(-180.0f, 180.0f), { 0, 0, 1 });
+		//UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::GetSpawnLocation) Velocity : %s"), *Velocity.ToString());
+		Velocity = TargetCharacter->GetActorForwardVector() * SpawnDistance;
+		Velocity = Velocity.RotateAngleAxis(FMath::RandRange(-180.0f, 180.0f), { 0, 0, 1 });
+		SpawnLocation += Velocity;
 	}
 	else
 	{
