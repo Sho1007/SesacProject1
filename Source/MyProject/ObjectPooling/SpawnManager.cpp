@@ -76,10 +76,12 @@ void ASpawnManager::RespawnBoss(int32 PoolingIndex)
 
 void ASpawnManager::SpawnProjectile(FVector StartLocation, FRotator StartRotation, FName ProjectileName)
 {
+	UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::SpawnProjectile"));
 	for (int i = 0; i < ProjectilePool.Num(); ++i)
 	{
 		if (ProjectilePool[i]->IsActive() == false)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::SpawnProjectile"));
 			// Find Projectile Information From DataTable
 			Cast<AProjectileBase>(ProjectilePool[i])->SetProjectileData(ProjectileDataTable->FindRow<FProjectileData>(ProjectileName, ""));
 			ProjectilePool[i]->SetActorLocationAndRotation(StartLocation, StartRotation);

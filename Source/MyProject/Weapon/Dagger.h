@@ -20,12 +20,14 @@ public:
 	void Init(ASpawnManager* NewSpawnManager);
 
 	void SpawnDagger();
+
+	virtual void Attach(AActor* OwningCharacter) override;
 protected:
 	virtual void Attack() override;
 private:
 	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))
 	float ThrowInterval;
-	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))
+	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess))
 	int32 ProjectileCount;
 	int32 CurrentProjectileCount;
 	UPROPERTY(Meta = (AllowPrivateAccess))

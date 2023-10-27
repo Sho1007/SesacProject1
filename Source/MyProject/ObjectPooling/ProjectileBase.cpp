@@ -39,8 +39,7 @@ void AProjectileBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
-	AddActorWorldOffset( GetActorForwardVector() * Speed * DeltaTime, true);
+	Move(DeltaTime);
 
 	if (Distance != -1.0f)
 	{
@@ -67,7 +66,6 @@ void AProjectileBase::SetProjectileData(FProjectileData* NewProjectileData)
 	Damage = NewProjectileData->Damage;
 	PenetrateCount = NewProjectileData->PenetrateCount;
 	Distance = NewProjectileData->Distance;
-	CurrentDistance = 0.0f;
 }
 
 void AProjectileBase::Attack(AActor* TargetActor)
@@ -79,6 +77,8 @@ void AProjectileBase::Activate()
 {
 	Super::Activate();
 	HitBox->SetCollisionProfileName(TEXT("Projectile"));
+
+	CurrentDistance = 0.0f;
 }
 
 void AProjectileBase::Deactivate()
@@ -86,4 +86,14 @@ void AProjectileBase::Deactivate()
 	Super::Deactivate();
 
 	HitBox->SetCollisionProfileName(TEXT("NoCollision"));
+}
+
+float AProjectileBase::GetSpeed() const
+{
+	return Speed;
+}
+
+void AProjectileBase::Move(float DeltaTime)
+{
+	AddActorWorldOffset(GetActorForwardVector() * Speed * DeltaTime);
 }

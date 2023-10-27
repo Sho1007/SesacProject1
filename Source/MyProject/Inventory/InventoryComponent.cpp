@@ -3,6 +3,8 @@
 
 #include "../Inventory/InventoryComponent.h"
 
+#include "../Weapon/WeaponBase.h"
+
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
@@ -21,4 +23,75 @@ void UInventoryComponent::BeginPlay()
 
 	// ...
 	
+}
+
+void UInventoryComponent::TestAddFunction()
+{
+	AddWeapon(TestWeaponName);
+}
+
+bool UInventoryComponent::AddWeapon(FName WeaponName)
+{
+	if (WeaponDataTable == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddWeapon) WeaponDataTable is nullptr"));
+		return false;
+	}
+
+	FWeaponData* WeaponData = WeaponDataTable->FindRow<FWeaponData>(WeaponName, "");
+
+	if (WeaponData == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddWeapon) Cannot Find Weapon Data From WeaponName"));
+		return false;
+	}
+
+	AWeaponBase* TargetWeapon = nullptr;
+
+	// Find Weapon Actor
+	for (int i = 0; i < WeaponArray.Num(); ++i)
+	{
+		if (WeaponArray[i]->GetWeaponName() == WeaponName)
+		{
+			TargetWeapon = WeaponArray[i];
+			break;
+		}
+	}
+
+	if (TargetWeapon == nullptr)
+	{
+		// Add New Weapon
+		FActorSpawnParameters Params;
+		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		AWeaponBase* Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponData->WeaponClass, GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation(), Params);
+		if (Weapon == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddWeapon) Failed to spawn Weapon"));
+			return false;
+		}
+		Weapon->Attach(GetOwner());
+		WeaponArray.Add(Weapon);
+		EnforcableNameSet.Add(Weapon->GetWeaponName());
+	}
+	else
+	{
+		if (EnforcableNameSet.Contains(TargetWeapon->GetWeaponName()))
+		{
+			// Enforce Weapon
+			TargetWeapon->LevelUp();
+
+			if (TargetWeapon->IsPossibleToLevelUp() == false)
+			{
+				EnforcableNameSet.Remove(EnforcableNameSet.FindId(TargetWeapon->GetWeaponName()));
+			}
+		}
+		else
+		{
+			// 강화 불가
+			UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddWeapon"));
+			return false;
+		}
+	}
+
+	return true;
 }

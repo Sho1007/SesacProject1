@@ -59,6 +59,11 @@ public:
 	virtual void Activate() override;
 	virtual void Deactivate() override;
 
+	float GetSpeed() const;
+
+protected:
+	void Move(float DeltaTime);
+
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile", Meta = (AllowPrivateAccess))
 	float Distance;

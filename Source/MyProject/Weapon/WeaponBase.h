@@ -30,7 +30,18 @@ public:
 
 	bool IsPossibleToLevelUp() const;
 
+	int GetCurrentLevel() const;
+	int GetMaxLevel() const;
+
+	FName GetWeaponName() const;
+
+	virtual void Attach(AActor* OwningCharacter);
+
+	virtual void LevelUp();
+
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	FName WeaponName;
 	UPROPERTY(EditDefaultsOnly)
 	UTexture2D* WeaponImage;
 	UPROPERTY(EditDefaultsOnly)

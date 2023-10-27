@@ -3,7 +3,7 @@
 
 #include "../Weapon/WeaponBase.h"
 
-#include "Engine/InterpCurveEdSetup.h"
+#include <GameFramework/Character.h>
 
 // Sets default values
 AWeaponBase::AWeaponBase()
@@ -41,4 +41,27 @@ void AWeaponBase::Tick(float DeltaTime)
 bool AWeaponBase::IsPossibleToLevelUp() const
 {
 	return CurrentLevel < MaxLevel;
+}
+
+int AWeaponBase::GetCurrentLevel() const
+{
+	return CurrentLevel;
+}
+
+int AWeaponBase::GetMaxLevel() const
+{
+	return MaxLevel;
+}
+
+FName AWeaponBase::GetWeaponName() const
+{
+	return WeaponName;
+}
+
+void AWeaponBase::Attach(AActor* OwningCharacter)
+{
+}
+
+void AWeaponBase::LevelUp()
+{
 }

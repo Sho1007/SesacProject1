@@ -10,26 +10,31 @@
  * 
  */
 
-class AProjectileBase;
+class ABibleProjectile;
 UCLASS()
 class MYPROJECT_API ABible : public AWeaponBase
 {
 	GENERATED_BODY()
-
-
+	
 public:
+	virtual void BeginPlay() override;
 	UFUNCTION(CallInEditor)
-	void AddProjectile();
+	void AddProjectile(int AddCount = 1);
 
 	virtual void Tick(float DeltaSeconds) override;
-	
+	virtual void Attack() override;
+
+	virtual void Attach(AActor* OwningCharacter) override;
+
 private:
-	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bible", Meta = (AllowPrivateAccess))
+	float Duration;
+	UPROPERTY(EditDefaultsOnly, Category = "Bible", Meta = (AllowPrivateAccess))
 	float RotateSpeed;
-	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))
+	UPROPERTY(EditDefaultsOnly, Category = "Bible", Meta = (AllowPrivateAccess))
 	float ProjectileDistance;
-	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))
-	TArray<AProjectileBase*> ProjectileArray;
-	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))
-	TSubclassOf<AProjectileBase> BibleProjectileClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Bible", Meta = (AllowPrivateAccess))
+	TArray<ABibleProjectile*> ProjectileArray;
+	UPROPERTY(EditDefaultsOnly, Category = "Bible", Meta = (AllowPrivateAccess))
+	TSubclassOf<ABibleProjectile> BibleProjectileClass;
 };
