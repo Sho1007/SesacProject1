@@ -54,6 +54,8 @@ public:
 
 	virtual void SetProjectileData(FProjectileData* NewProjectileData);
 
+	virtual void Attack(AActor* TargetActor);
+
 	virtual void Activate() override;
 	virtual void Deactivate() override;
 

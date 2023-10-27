@@ -20,9 +20,9 @@ AProjectileBase::AProjectileBase()
 void AProjectileBase::OnHitBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("AProjectileBase::OnHitBoxBeginOverlap) this : %s, Overlapped Actor : %s"), *GetName(), *OtherActor->GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("AProjectileBase::OnHitBoxBeginOverlap) this : %s, Overlapped Actor : %s"), *GetName(), *OtherActor->GetName());
 
-	OtherActor->TakeDamage(Damage, FDamageEvent(UDamageType::StaticClass()), GetWorld()->GetFirstPlayerController(), this);
+	Attack(OtherActor);
 
 	if (PenetrateCount != -1 && --PenetrateCount <= 0) Deactivate();
 }
@@ -32,6 +32,7 @@ void AProjectileBase::BeginPlay()
 	Super::BeginPlay();
 
 	HitBox->OnComponentBeginOverlap.AddDynamic(this, &AProjectileBase::OnHitBoxBeginOverlap);
+
 }
 
 void AProjectileBase::Tick(float DeltaTime)
@@ -67,6 +68,11 @@ void AProjectileBase::SetProjectileData(FProjectileData* NewProjectileData)
 	PenetrateCount = NewProjectileData->PenetrateCount;
 	Distance = NewProjectileData->Distance;
 	CurrentDistance = 0.0f;
+}
+
+void AProjectileBase::Attack(AActor* TargetActor)
+{
+	TargetActor->TakeDamage(Damage, FDamageEvent(UDamageType::StaticClass()), GetWorld()->GetFirstPlayerController(), this);
 }
 
 void AProjectileBase::Activate()
