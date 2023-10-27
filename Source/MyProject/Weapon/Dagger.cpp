@@ -24,7 +24,8 @@ void ADagger::Attack()
 
 	if (AttackHandle.IsValid()) GetWorld()->GetTimerManager().ClearTimer(AttackHandle);
 
-	CurrentProjectileCount = ProjectileCount;
+	if (ProjectileCount == 0) return;
 
+	CurrentProjectileCount = ProjectileCount;
 	GetWorld()->GetTimerManager().SetTimer(AttackHandle, this, &ADagger::SpawnDagger, ThrowInterval, true);
 }

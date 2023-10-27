@@ -209,7 +209,7 @@ FVector ASpawnManager::GetSpawnLocation()
 	}
 
 	FVector SpawnLocation = TargetCharacter->GetActorLocation();
-	SpawnLocation.Z = 90.0f;
+	SpawnLocation.Z = 100.0f;
 
 	FVector Velocity = TargetCharacter->GetVelocity();
 	if (Velocity == FVector::ZeroVector)

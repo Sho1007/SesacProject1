@@ -59,8 +59,9 @@ void AEnemyBase::Tick(float DeltaTime)
 		Respawn();
 		return;
 	}
-	if (MoveDirection.Length() > 100.0f)
+	if (MoveDirection.Length() > AttackRange)
 	{
+		//UE_LOG(LogTemp, Error, TEXT("AEnemyBase::Tick) Target Distance : %f"), MoveDirection.Length());
 		MoveDirection.Normalize();
 		AddActorWorldOffset(MoveDirection * Speed * DeltaTime, true);
 	}
@@ -71,8 +72,9 @@ void AEnemyBase::Tick(float DeltaTime)
 		FVector ImpulseDirection = ObstacleComponentArray[i]->GetOwner()->GetActorLocation() - ActorLocation;
 		ImpulseDirection.Normalize();
 		ObstacleComponentArray[i]->AddImpulse(ImpulseDirection * ImpulsePower * Speed);
-		UE_LOG(LogTemp, Error, TEXT("AEnemyBase::Tick) Impulse To %s"), *ObstacleComponentArray[i]->GetName());
+		//UE_LOG(LogTemp, Error, TEXT("AEnemyBase::Tick) Impulse To %s"), *ObstacleComponentArray[i]->GetName());
 	}
+
 	if (bIsAttackable)
 	{
 		CurrentAttackCoolTime += DeltaTime;
@@ -123,11 +125,22 @@ void AEnemyBase::Die()
 	if (LootItemClassArray.Num() > 0)
 	{
 		FActorSpawnParameters Params;
-		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 		for (int i = 0; i < LootItemClassArray.Num(); ++i)
 		{
-			if (LootItemClassArray[i]) AActor* LootItem = GetWorld()->SpawnActor<AActor>(LootItemClassArray[i], GetActorLocation(), GetActorRotation(), Params);
+			if (LootItemClassArray[i])
+			{
+				AActor* LootItem = GetWorld()->SpawnActor<AActor>(LootItemClassArray[i], GetActorLocation(), GetActorRotation(), Params);
+				if (LootItem)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::Die) LootItem Spawned"));
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::Die) LootItem Not Spawned"));
+				}
+			}
 		}
 	}
 

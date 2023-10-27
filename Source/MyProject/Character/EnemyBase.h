@@ -88,6 +88,8 @@ private:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Enemy", Meta = (AllowPrivateAccess))
 	float AttackDamage;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Enemy", Meta = (AllowPrivateAccess))
+	float AttackRange;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Enemy", Meta = (AllowPrivateAccess))
 	float AttackCoolTime;
 	float CurrentAttackCoolTime;
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
