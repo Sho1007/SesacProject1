@@ -4,6 +4,8 @@
 #include "InGamePlayerController.h"
 
 #include "../Widget/InGameWidget.h"
+#include "GameFramework/Character.h"
+#include "../Inventory/InventoryComponent.h"
 
 void AInGamePlayerController::BeginPlay()
 {
@@ -23,6 +25,14 @@ void AInGamePlayerController::BeginPlay()
 
 void AInGamePlayerController::ShowBoxWidget(int32 ItemCount)
 {
-
-	InGameWidget->ShowBoxWidget();
+	if (UInventoryComponent* InventoryComponent = Cast<UInventoryComponent>(GetCharacter()->GetComponentByClass(UInventoryComponent::StaticClass())))
+	{
+		TArray<FName> ItemNameArray;
+		InventoryComponent->GetEnforcableItemName(ItemNameArray, ItemCount);
+		InGameWidget->ShowBoxWidget(ItemNameArray);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AInGamePlayerController::ShowBoxWidget) Character has no Inventory Component"));
+	}
 }

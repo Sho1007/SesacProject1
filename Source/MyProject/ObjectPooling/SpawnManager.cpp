@@ -11,6 +11,8 @@
 #include "MyProject/Character/EnemyBase.h"
 #include "ProjectileBase.h"
 
+#include "../ZombieSurvivalGameInstance.h"
+
 // Sets default values
 ASpawnManager::ASpawnManager()
 {
@@ -76,6 +78,20 @@ void ASpawnManager::RespawnBoss(int32 PoolingIndex)
 
 void ASpawnManager::SpawnProjectile(FVector StartLocation, FRotator StartRotation, FName ProjectileName)
 {
+	UZombieSurvivalGameInstance* GameInstance = GetGameInstance<UZombieSurvivalGameInstance>();
+	if (GameInstance == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ASpawnManager::SpawnProjectile) GameInstance is not UZombieSurvivalGameInstance"));
+		return;
+	}
+
+	FProjectileData* ProjectileData =  GameInstance->GetProjectileData(ProjectileName);
+	if (ProjectileData == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ASpawnManager::SpawnProjectile) Cannot Find ProjectileData from ProjectileName"));
+		return;
+	}
+
 	UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::SpawnProjectile"));
 	for (int i = 0; i < ProjectilePool.Num(); ++i)
 	{
@@ -83,7 +99,8 @@ void ASpawnManager::SpawnProjectile(FVector StartLocation, FRotator StartRotatio
 		{
 			UE_LOG(LogTemp, Warning, TEXT("ASpawnManager::SpawnProjectile"));
 			// Find Projectile Information From DataTable
-			Cast<AProjectileBase>(ProjectilePool[i])->SetProjectileData(ProjectileDataTable->FindRow<FProjectileData>(ProjectileName, ""));
+
+			Cast<AProjectileBase>(ProjectilePool[i])->SetProjectileData(ProjectileData);
 			ProjectilePool[i]->SetActorLocationAndRotation(StartLocation, StartRotation);
 			ProjectilePool[i]->Activate();
 			break;
@@ -169,7 +186,7 @@ void ASpawnManager::SpawnBoss()
 	{
 		if (BossPool[i]->IsActive() == false)
 		{
-			BossPool[i]->SetActorLocation(GetSpawnLocation() + FVector(0, 0, 100));
+			BossPool[i]->SetActorLocation(GetSpawnLocation() + FVector(0, 0, 90));
 			BossPool[i]->Activate();
 			return;
 		}

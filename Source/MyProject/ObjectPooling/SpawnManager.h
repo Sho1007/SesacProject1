@@ -46,10 +46,6 @@ private:
 	FVector GetSpawnLocation();
 
 private:
-	// Data Table
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Spawn Manager", Meta = (AllowPrivateAccess))
-	UDataTable* ProjectileDataTable;
-
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "Spawn Manager", Meta = (AllowPrivateAccess))
 	ACharacter* TargetCharacter;
 

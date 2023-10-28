@@ -11,7 +11,7 @@ void ABible::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AddProjectile(3);
+	AddProjectile(9);
 }
 
 void ABible::AddProjectile(int AddCount)
@@ -36,7 +36,6 @@ void ABible::AddProjectile(int AddCount)
 		ProjectileArray[i]->SetActorRelativeLocation(RelativeLocation);
 		ProjectileArray[i]->SetDuration(Duration);
 		ProjectileArray[i]->Activate();
-		
 	}
 	CurrentAttackCoolTime = 0.0f;
 }

@@ -5,7 +5,7 @@
 
 #include "BoxWidget.h"
 
-void UInGameWidget::ShowBoxWidget()
+void UInGameWidget::ShowBoxWidget(const TArray<FName>& ItemNameArray)
 {
-	BoxWidget->ShowWidget();
+	BoxWidget->ShowWidget(ItemNameArray);
 }

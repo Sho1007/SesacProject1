@@ -5,6 +5,8 @@
 
 #include "../Weapon/WeaponBase.h"
 
+#include "../ZombieSurvivalGameInstance.h"
+
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
@@ -32,13 +34,14 @@ void UInventoryComponent::TestAddFunction()
 
 bool UInventoryComponent::AddWeapon(FName WeaponName)
 {
-	if (WeaponDataTable == nullptr)
+	UZombieSurvivalGameInstance* GameInstance = GetWorld()->GetGameInstance<UZombieSurvivalGameInstance>();
+	if (GameInstance == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddWeapon) WeaponDataTable is nullptr"));
+		UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddWeapon) GameInstance is not UZombieSurvivalGameInstance"));
 		return false;
 	}
-
-	FWeaponData* WeaponData = WeaponDataTable->FindRow<FWeaponData>(WeaponName, "");
+	
+	FWeaponData* WeaponData = GameInstance->GetWeaponData(WeaponName);
 
 	if (WeaponData == nullptr)
 	{
@@ -94,4 +97,13 @@ bool UInventoryComponent::AddWeapon(FName WeaponName)
 	}
 
 	return true;
+}
+
+void UInventoryComponent::GetEnforcableItemName(TArray<FName>& ItemNameArray, int32 ItemCount)
+{
+	TArray<FName> Array = EnforcableNameSet.Array();
+	for (int i = 0; i < ItemCount; ++i)
+	{
+		ItemNameArray.Add(Array[FMath::RandRange(0, EnforcableNameSet.Num() - 1)]);
+	}
 }

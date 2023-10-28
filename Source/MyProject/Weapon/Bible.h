@@ -18,6 +18,7 @@ class MYPROJECT_API ABible : public AWeaponBase
 	
 public:
 	virtual void BeginPlay() override;
+
 	UFUNCTION(CallInEditor)
 	void AddProjectile(int AddCount = 1);
 

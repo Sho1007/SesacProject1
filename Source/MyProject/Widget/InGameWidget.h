@@ -16,7 +16,9 @@ class MYPROJECT_API UInGameWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void ShowBoxWidget();
+	void ShowBoxWidget(const TArray<FName>& ItemNameArray);
+
+
 private:
 	UPROPERTY(Meta = (AllowPrivateAccess, BindWidget))
 	UBoxWidget* BoxWidget;

@@ -38,11 +38,12 @@ public:
 	FName TestWeaponName;
 	UFUNCTION(CallInEditor)
 	void TestAddFunction();
-	
+
+	UFUNCTION(BlueprintCallable)
 	bool AddWeapon(FName WeaponName);
+
+	void GetEnforcableItemName(TArray<FName>& ItemNameArray, int32 ItemCount);
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
-	UDataTable* WeaponDataTable;
 	UPROPERTY(VisibleInstanceOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
 	TArray<AWeaponBase*> WeaponArray;
 	UPROPERTY(VisibleInstanceOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
