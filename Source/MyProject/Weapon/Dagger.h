@@ -24,6 +24,9 @@ public:
 	virtual void Attach(AActor* OwningCharacter) override;
 protected:
 	virtual void Attack() override;
+
+	virtual void LevelUp() override;
+
 private:
 	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))
 	float ThrowInterval;

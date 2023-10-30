@@ -27,6 +27,8 @@ public:
 
 	virtual void Attach(AActor* OwningCharacter) override;
 
+	virtual void LevelUp() override;
+
 private:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bible", Meta = (AllowPrivateAccess))
 	float Duration;

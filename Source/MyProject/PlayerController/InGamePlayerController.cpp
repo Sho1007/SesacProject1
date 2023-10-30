@@ -29,6 +29,9 @@ void AInGamePlayerController::ShowBoxWidget(int32 ItemCount)
 	{
 		TArray<FName> ItemNameArray;
 		InventoryComponent->GetEnforcableItemName(ItemNameArray, ItemCount);
+		SetPause(true);
+		SetInputMode(FInputModeUIOnly());
+		SetShowMouseCursor(true);
 		InGameWidget->ShowBoxWidget(ItemNameArray);
 	}
 	else
