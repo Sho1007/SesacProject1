@@ -64,4 +64,5 @@ void AWeaponBase::Attach(AActor* OwningCharacter)
 
 void AWeaponBase::LevelUp()
 {
+	CurrentLevel++;
 }

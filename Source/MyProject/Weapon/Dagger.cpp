@@ -53,3 +53,21 @@ void ADagger::Attack()
 	CurrentProjectileCount = ProjectileCount;
 	GetWorld()->GetTimerManager().SetTimer(AttackHandle, this, &ADagger::SpawnDagger, ThrowInterval, true);
 }
+
+void ADagger::LevelUp()
+{
+	Super::LevelUp();
+
+	switch(CurrentLevel)
+	{
+	case 1:
+		ProjectileCount++;
+		break;
+	case 2:
+		ProjectileCount++;
+		break;
+	case 3:
+		ProjectileCount++;
+		break;
+	}
+}

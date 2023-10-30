@@ -11,7 +11,7 @@ void ABible::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AddProjectile(9);
+	AddProjectile(2);
 }
 
 void ABible::AddProjectile(int AddCount)
@@ -67,5 +67,23 @@ void ABible::Attach(AActor* OwningCharacter)
 	if (ACharacter* Character = Cast<ACharacter>(OwningCharacter))
 	{
 		this->AttachToActor(Character, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	}
+}
+
+void ABible::LevelUp()
+{
+	Super::LevelUp();
+
+	switch (CurrentLevel)
+	{
+	case 1:
+		AddProjectile();
+		break;
+	case 2:
+		AddProjectile();
+		break;
+	case 3:
+		AddProjectile();
+		break;
 	}
 }

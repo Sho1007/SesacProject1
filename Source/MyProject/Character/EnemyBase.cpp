@@ -63,7 +63,7 @@ void AEnemyBase::Tick(float DeltaTime)
 	{
 		//UE_LOG(LogTemp, Error, TEXT("AEnemyBase::Tick) Target Distance : %f"), MoveDirection.Length());
 		MoveDirection.Normalize();
-		AddActorWorldOffset(MoveDirection * Speed * DeltaTime, true);
+		AddActorWorldOffset(FVector(MoveDirection.X, MoveDirection.Y, 0) * Speed * DeltaTime, true);
 	}
 
 	FVector ActorLocation = GetActorLocation();

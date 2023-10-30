@@ -10,12 +10,15 @@
 #include "InventoryComponent.generated.h"
 
 class AWeaponBase;
+class UTexture2D;
 USTRUCT()
 struct FWeaponData : public FTableRowBase
 {
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UTexture2D* WeaponImage;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<AWeaponBase> WeaponClass;
 };

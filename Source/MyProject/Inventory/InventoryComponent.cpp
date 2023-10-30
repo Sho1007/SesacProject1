@@ -74,7 +74,7 @@ bool UInventoryComponent::AddWeapon(FName WeaponName)
 		}
 		Weapon->Attach(GetOwner());
 		WeaponArray.Add(Weapon);
-		EnforcableNameSet.Add(Weapon->GetWeaponName());
+		if (Weapon->IsPossibleToLevelUp()) EnforcableNameSet.Add(Weapon->GetWeaponName());
 	}
 	else
 	{
@@ -102,8 +102,18 @@ bool UInventoryComponent::AddWeapon(FName WeaponName)
 void UInventoryComponent::GetEnforcableItemName(TArray<FName>& ItemNameArray, int32 ItemCount)
 {
 	TArray<FName> Array = EnforcableNameSet.Array();
-	for (int i = 0; i < ItemCount; ++i)
+	if (Array.Num() == 0)
 	{
-		ItemNameArray.Add(Array[FMath::RandRange(0, EnforcableNameSet.Num() - 1)]);
+		for (int i = 0; i < ItemCount; ++i)
+		{
+			ItemNameArray.Add(TEXT("Money"));
+		}
+	}
+	else
+	{
+		for (int i = 0; i < ItemCount; ++i)
+		{
+			ItemNameArray.Add(Array[FMath::RandRange(0, EnforcableNameSet.Num() - 1)]);
+		}
 	}
 }
