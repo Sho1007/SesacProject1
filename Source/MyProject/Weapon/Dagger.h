@@ -28,13 +28,6 @@ protected:
 	virtual void LevelUp() override;
 
 private:
-	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))
-	float ThrowInterval;
-	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess))
-	int32 ProjectileCount;
-	int32 CurrentProjectileCount;
-	UPROPERTY(Meta = (AllowPrivateAccess))
-	ASpawnManager* SpawnManager;
 
 	FTimerHandle AttackHandle;
 };

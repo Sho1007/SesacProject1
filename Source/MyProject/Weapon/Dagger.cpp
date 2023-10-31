@@ -3,8 +3,8 @@
 
 #include "../Weapon/Dagger.h"
 
-#include "EngineUtils.h"
 #include "GameFramework/Character.h"
+#include "MyProject/Character/StatusComponent.h"
 #include "MyProject/ObjectPooling/SpawnManager.h"
 
 void ADagger::Init(ASpawnManager* NewSpawnManager)
@@ -14,9 +14,13 @@ void ADagger::Init(ASpawnManager* NewSpawnManager)
 
 void ADagger::SpawnDagger()
 {
-	if (SpawnManager)
+	if (SpawnManager && StatusComponent)
 	{
-		SpawnManager->SpawnProjectile(GetActorLocation() + FVector(0, FMath::RandRange(-75.0f, 75.0f), 90), GetActorRotation(), TEXT("Dagger"));
+		SpawnManager->SpawnProjectile(GetActorLocation() + FVector(0, 0, 45), GetActorRotation(), TEXT("Dagger"),
+			ProjectileSpeed * (StatusComponent->GetSpeed() / 100.0f),
+			WeaponDamage * (StatusComponent->GetMight() / 100.0f),
+			WeaponPierce,
+			WeaponArea * (StatusComponent->GetArea() / 100.0f));
 	}
 
 	if (--CurrentProjectileCount == 0) GetWorld()->GetTimerManager().ClearTimer(AttackHandle);
@@ -31,14 +35,6 @@ void ADagger::Attach(AActor* OwningCharacter)
 		this->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		this->SetActorRelativeLocation(FVector(0, 0, 90));
 		this->SetActorRelativeRotation(FRotator(0, 90, 0));
-
-		TActorIterator<AActor> It(GetWorld(), ASpawnManager::StaticClass());
-		SpawnManager = Cast<ASpawnManager>(*It);
-
-		if (SpawnManager == false)
-		{
-			UE_LOG(LogTemp, Error, TEXT("ADagger::Attach) SpawnManager is nullptr"));
-		}
 	}
 }
 
@@ -50,8 +46,8 @@ void ADagger::Attack()
 
 	if (ProjectileCount == 0) return;
 
-	CurrentProjectileCount = ProjectileCount;
-	GetWorld()->GetTimerManager().SetTimer(AttackHandle, this, &ADagger::SpawnDagger, ThrowInterval, true);
+	CurrentProjectileCount = ProjectileCount + StatusComponent->GetAmount();
+	GetWorld()->GetTimerManager().SetTimer(AttackHandle, this, &ADagger::SpawnDagger, ProjectileInterval, true);
 }
 
 void ADagger::LevelUp()
@@ -65,9 +61,23 @@ void ADagger::LevelUp()
 		break;
 	case 2:
 		ProjectileCount++;
+		WeaponDamage += 5;
 		break;
 	case 3:
 		ProjectileCount++;
+		break;
+	case 4:
+		WeaponPierce++;
+		break;
+	case 5:
+		ProjectileCount++;
+		break;
+	case 6:
+		ProjectileCount++;
+		WeaponDamage += 5;
+		break;
+	case 7:
+		WeaponPierce++;
 		break;
 	}
 }

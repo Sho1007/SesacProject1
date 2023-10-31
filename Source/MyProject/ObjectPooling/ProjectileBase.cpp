@@ -51,7 +51,7 @@ void AProjectileBase::Tick(float DeltaTime)
 	}
 }
 
-void AProjectileBase::SetProjectileData(FProjectileData* NewProjectileData)
+void AProjectileBase::SetProjectileData(FProjectileData* NewProjectileData, float NewSpeed, float NewDamage, float NewPierce, float NewArea)
 {
 	if (NewProjectileData == nullptr)
 	{
@@ -62,10 +62,10 @@ void AProjectileBase::SetProjectileData(FProjectileData* NewProjectileData)
 	StaticMeshComponent->SetMaterial(0, NewProjectileData->Material);
 	StaticMeshComponent->SetRelativeScale3D(FVector(NewProjectileData->MeshScale));
 	StaticMeshComponent->SetRelativeRotation(NewProjectileData->MeshRotation);
-	Speed = NewProjectileData->Speed;
-	Damage = NewProjectileData->Damage;
-	PenetrateCount = NewProjectileData->PenetrateCount;
-	Distance = NewProjectileData->Distance;
+	Speed = NewSpeed * BaseSpeed;
+	Damage = NewDamage;
+	PenetrateCount = NewPierce;
+	Distance = NewArea * BaseDistance;
 }
 
 void AProjectileBase::Attack(AActor* TargetActor)

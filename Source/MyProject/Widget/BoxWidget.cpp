@@ -42,6 +42,9 @@ void UBoxWidget::ShowWidget(const TArray<FName>& NewItemNameArray)
 	UE_LOG(LogTemp, Warning, TEXT("UBoxWidget::ShowWidget) Item : %s"), *PrintName);
 	*/
 
+	//Brd_Background->SetVisibility(ESlateVisibility::Visible);
+	//BackgroundColor.A = 0.0f;
+	//Brd_Background->SetBrushColor(BackgroundColor);
 	SetVisibility(ESlateVisibility::Visible);
 	PlayAnimation(BoxAnimation);
 }
@@ -79,6 +82,9 @@ void UBoxWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	//UE_LOG(LogTemp, Warning, TEXT("UBoxWidget::NativeTick"));
+
+	//BackgroundColor.A += InDeltaTime;
+	//Brd_Background->SetBrushColor(BackgroundColor);
 
 	if (bIsSetItemImage)
 	{

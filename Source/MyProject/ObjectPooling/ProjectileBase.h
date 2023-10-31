@@ -25,14 +25,6 @@ public:
 	UStaticMesh* StaticMesh;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UMaterial* Material;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) 
-	int32 PenetrateCount;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float Speed;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float Damage;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float Distance;
 };
 
 class USphereComponent;
@@ -52,7 +44,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void SetProjectileData(FProjectileData* NewProjectileData);
+	virtual void SetProjectileData(FProjectileData* NewProjectileData, float NewSpeed, float NewDamage, float NewPierce, float NewArea);
 
 	virtual void Attack(AActor* TargetActor);
 
@@ -65,6 +57,11 @@ protected:
 	void Move(float DeltaTime);
 
 protected:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile", Meta = (AllowPrivateAccess))
+	float BaseDistance = 200.0f;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile", Meta = (AllowPrivateAccess))
+	float BaseSpeed = 200.0f;
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile", Meta = (AllowPrivateAccess))
 	float Distance;
 	float CurrentDistance;

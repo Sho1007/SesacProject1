@@ -21,6 +21,9 @@ void AInGamePlayerController::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("AInGamePlayerController::BeginPlay) InGameWidgetClass is nullptr"));
 	}
+
+	SetShowMouseCursor(false);
+	SetInputMode(FInputModeGameOnly());
 }
 
 void AInGamePlayerController::ShowBoxWidget(int32 ItemCount)

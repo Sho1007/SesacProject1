@@ -18,7 +18,6 @@ public:
 
 	virtual void Activate() override;
 
-	void SetDuration(float NewDuration);
 protected:
 	virtual void Attack(AActor* TargetActor) override;
 

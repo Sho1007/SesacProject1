@@ -30,8 +30,8 @@ public:
 	virtual void LevelUp() override;
 
 private:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bible", Meta = (AllowPrivateAccess))
-	float Duration;
+	UPROPERTY(EditDefaultsOnly, Category = "Bible", Meta = (AllowPrivateAccess))
+	bool bIsAttacking;
 	UPROPERTY(EditDefaultsOnly, Category = "Bible", Meta = (AllowPrivateAccess))
 	float RotateSpeed;
 	UPROPERTY(EditDefaultsOnly, Category = "Bible", Meta = (AllowPrivateAccess))

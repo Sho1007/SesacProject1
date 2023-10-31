@@ -28,7 +28,7 @@ public:
 	void RespawnEnemy(int32 PoolingIndex);
 	void RespawnBoss(int32 PoolingIndex);
 
-	void SpawnProjectile(FVector StartLocation, FRotator StartRotation, FName ProjectileName);
+	void SpawnProjectile(FVector StartLocation, FRotator StartRotation, FName ProjectileName, float NewSpeed, float NewDamage, float NewPierce, float NewArea);
 
 public:
 	// Getter / Setter

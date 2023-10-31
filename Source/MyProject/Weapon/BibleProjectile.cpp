@@ -38,9 +38,3 @@ void ABibleProjectile::Attack(AActor* TargetActor)
 
 	Super::Attack(TargetActor);
 }
-
-void ABibleProjectile::SetDuration(float NewDuration)
-{
-	Speed = 1;
-	Distance = NewDuration;
-}

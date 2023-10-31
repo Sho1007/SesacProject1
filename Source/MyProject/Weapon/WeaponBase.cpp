@@ -4,6 +4,10 @@
 #include "../Weapon/WeaponBase.h"
 
 #include <GameFramework/Character.h>
+#include <EngineUtils.h>
+
+#include "../Character/StatusComponent.h"
+#include "../ObjectPooling/SpawnManager.h"
 
 // Sets default values
 AWeaponBase::AWeaponBase()
@@ -60,6 +64,24 @@ FName AWeaponBase::GetWeaponName() const
 
 void AWeaponBase::Attach(AActor* OwningCharacter)
 {
+	// Set SpawnManager
+	TActorIterator<AActor> It(GetWorld(), ASpawnManager::StaticClass());
+	SpawnManager = Cast<ASpawnManager>(*It);
+
+	if (SpawnManager == false)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ADagger::Attach) SpawnManager is nullptr"));
+	}
+
+	// Set StatusComponent
+	if (UStatusComponent* NewStatusComponent = Cast<UStatusComponent>(OwningCharacter->GetComponentByClass(UStatusComponent::StaticClass())))
+	{
+		StatusComponent = NewStatusComponent;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("AWeaponBase::Attach) Player has no Status Component"));
+	}
 }
 
 void AWeaponBase::LevelUp()
