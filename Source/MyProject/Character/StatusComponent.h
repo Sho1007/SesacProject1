@@ -112,7 +112,7 @@ private:
 	float Magnet = 30;
 
 public:
-	/*
+	
 	// Delegate
 	FDele_Multi_One_Float OnMaxHealthUpdated;
 	FDele_Multi_One_Float OnRecoveryUpdated;
@@ -130,5 +130,5 @@ public:
 	FDele_Multi_One_Float OnGrowthUpdated;
 	FDele_Multi_One_Float OnGreedUpdated;
 	FDele_Multi_One_Float OnMagnetUpdated;
-	*/
+	
 };
