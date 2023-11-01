@@ -20,7 +20,8 @@ void ADagger::SpawnDagger()
 			ProjectileSpeed * (StatusComponent->GetSpeed() / 100.0f),
 			WeaponDamage * (StatusComponent->GetMight() / 100.0f),
 			WeaponPierce,
-			WeaponArea * (StatusComponent->GetArea() / 100.0f));
+			WeaponArea * (StatusComponent->GetArea() / 100.0f),
+			WeaponKnockback);
 	}
 
 	if (--CurrentProjectileCount == 0) GetWorld()->GetTimerManager().ClearTimer(AttackHandle);
@@ -56,27 +57,27 @@ void ADagger::LevelUp()
 
 	switch(CurrentLevel)
 	{
-	case 1:
-		ProjectileCount++;
-		break;
 	case 2:
 		ProjectileCount++;
-		WeaponDamage += 5;
 		break;
 	case 3:
 		ProjectileCount++;
+		WeaponDamage += 5;
 		break;
 	case 4:
-		WeaponPierce++;
+		ProjectileCount++;
 		break;
 	case 5:
-		ProjectileCount++;
+		WeaponPierce++;
 		break;
 	case 6:
 		ProjectileCount++;
-		WeaponDamage += 5;
 		break;
 	case 7:
+		ProjectileCount++;
+		WeaponDamage += 5;
+		break;
+	case 8:
 		WeaponPierce++;
 		break;
 	}

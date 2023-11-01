@@ -21,6 +21,10 @@ public:
 
 	void ShowBoxWidget(int32 ItemCount);
 
+	UFUNCTION(BlueprintCallable)
+	void ShowLevelUpWidget();
+
+	void HideLevelUpWidget();
 private:
 	UPROPERTY(VisibleInstanceOnly, Meta = (AllowPrivateAccess))
 	TArray<AWeaponBase*> WeaponArray;

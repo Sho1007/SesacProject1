@@ -11,6 +11,7 @@
 #include <Engine/DamageEvents.h>
 
 #include "../ObjectPooling/SpawnManager.h"
+#include "MyProject/ObjectPooling/ProjectileBase.h"
 
 #include "UObject/ObjectPtr.h"
 
@@ -84,6 +85,15 @@ void AEnemyBase::Tick(float DeltaTime)
 			Attack();
 		}
 	}
+
+	if (CurrentChangeMaterialTime > 0.0f)
+	{
+		CurrentChangeMaterialTime -= DeltaTime;
+		if (CurrentChangeMaterialTime <= 0.0f)
+		{
+			SetDefaultMaterial();
+		}
+	}
 }
 
 float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
@@ -93,9 +103,28 @@ float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 
 	CurrentHealth -= DamageAmount;
 
-	//UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::TakeDamage) Remain Health : %f"), CurrentHealth);
+	UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::TakeDamage) Damage : %f"), DamageAmount);
 
 	if (CurrentHealth <= 0.0f) Die();
+
+	// Change Material to Hitted
+	if (HittedMaterial)
+	{
+		CurrentChangeMaterialTime = ChangeMaterialTime;
+		for (int i = 0; i < DefaultMaterials.Num(); ++i)
+		{
+			SkeletalMeshComponent->SetMaterial(i, HittedMaterial);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("AEnemyBase::TakeDamage) HittedMaterial is nullptr"));
+	}
+
+	if (AProjectileBase* Projectile = Cast<AProjectileBase>(DamageCauser))
+	{
+		AddActorWorldOffset(-Projectile->GetKnockback() * GetActorForwardVector() * BaseKnockback, true);
+	}
 
 	return Result;
 }
@@ -114,10 +143,21 @@ void AEnemyBase::Deactivate()
 {
 	Super::Deactivate();
 
+	SetDefaultMaterial();
+
 	bIsAttackable = false;
 	CurrentAttackCoolTime = AttackCoolTime;
 	CapsuleComponent->SetSimulatePhysics(false);
 	CapsuleComponent->SetCollisionProfileName(TEXT("NoCollision"));
+}
+
+void AEnemyBase::SetDefaultMaterial()
+{
+	CurrentChangeMaterialTime = 0.0f;
+	for (int i = 0; i < DefaultMaterials.Num(); ++i)
+	{
+		SkeletalMeshComponent->SetMaterial(i, DefaultMaterials[i]);
+	}
 }
 
 void AEnemyBase::Die()
@@ -189,4 +229,6 @@ void AEnemyBase::Init(ASpawnManager* NewSpawnManager, int32 NewPoolingIndex)
 	Super::Init(NewSpawnManager, NewPoolingIndex);
 
 	TargetCharacter = SpawnManager->GetTargetCharacter();
+
+	DefaultMaterials = SkeletalMeshComponent->GetMaterials();
 }

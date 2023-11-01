@@ -130,5 +130,4 @@ public:
 	FDele_Multi_One_Float OnGrowthUpdated;
 	FDele_Multi_One_Float OnGreedUpdated;
 	FDele_Multi_One_Float OnMagnetUpdated;
-	
 };

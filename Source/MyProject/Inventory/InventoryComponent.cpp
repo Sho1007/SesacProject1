@@ -75,6 +75,11 @@ bool UInventoryComponent::AddWeapon(FName WeaponName)
 		Weapon->Attach(GetOwner());
 		WeaponArray.Add(Weapon);
 		if (Weapon->IsPossibleToLevelUp()) EnforcableNameSet.Add(Weapon->GetWeaponName());
+
+		if (NewItemNameSet.Contains(WeaponName))
+		{
+			NewItemNameSet.Remove(NewItemNameSet.FindId(WeaponName));
+		}
 	}
 	else
 	{
@@ -95,7 +100,6 @@ bool UInventoryComponent::AddWeapon(FName WeaponName)
 			return false;
 		}
 	}
-
 	return true;
 }
 
@@ -116,4 +120,38 @@ void UInventoryComponent::GetEnforcableItemName(TArray<FName>& ItemNameArray, in
 			ItemNameArray.Add(Array[FMath::RandRange(0, EnforcableNameSet.Num() - 1)]);
 		}
 	}
+}
+
+void UInventoryComponent::GetAddableItemName(TArray<FName>& ItemNameArray, int32 ItemCount)
+{
+	TArray<FName> Array = EnforcableNameSet.Array();
+	// How To Get Addable Item Name List?
+
+	Array += NewItemNameSet.Array();
+
+	while (ItemNameArray.Num () < ItemCount)
+	{
+		if (Array.Num() > 0)
+		{
+			int32 Index = FMath::RandRange(0, Array.Num() - 1);
+			ItemNameArray.Add(Array[Index]);
+			Array.RemoveAt(Index);
+		}
+		else break;
+	}
+}
+
+int UInventoryComponent::GetItemLevel(FName ItemName)
+{
+	for (int i = 0; i < WeaponArray.Num(); ++i)
+	{
+		if (WeaponArray[i]->GetWeaponName() == ItemName)
+		{
+			return WeaponArray[i]->GetCurrentLevel();
+		}
+	}
+
+	// Todo : EqupimentArray Search
+
+	return 0;
 }

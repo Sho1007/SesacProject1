@@ -44,7 +44,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void SetProjectileData(FProjectileData* NewProjectileData, float NewSpeed, float NewDamage, float NewPierce, float NewArea);
+	virtual void SetProjectileData(FProjectileData* NewProjectileData, float NewSpeed, float NewDamage, float NewPierce, float NewArea, float NewKnockback);
 
 	virtual void Attack(AActor* TargetActor);
 
@@ -52,6 +52,8 @@ public:
 	virtual void Deactivate() override;
 
 	float GetSpeed() const;
+
+	float GetKnockback() const;
 
 protected:
 	void Move(float DeltaTime);
@@ -75,4 +77,6 @@ protected:
 	float Speed;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Projectile", Meta = (AllowPrivateAccess))
 	float Damage;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Projectile", Meta = (AllowPrivateAccess))
+	float Knockback;
 };

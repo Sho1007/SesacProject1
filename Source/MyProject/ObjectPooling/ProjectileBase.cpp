@@ -51,21 +51,24 @@ void AProjectileBase::Tick(float DeltaTime)
 	}
 }
 
-void AProjectileBase::SetProjectileData(FProjectileData* NewProjectileData, float NewSpeed, float NewDamage, float NewPierce, float NewArea)
+void AProjectileBase::SetProjectileData(FProjectileData* NewProjectileData, float NewSpeed, float NewDamage, float NewPierce, float NewArea, float NewKnockback)
 {
 	if (NewProjectileData == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("AProjectileBase::SetProjectileData) ProjectileData is nullptr"));
-		return;
 	}
-	StaticMeshComponent->SetStaticMesh(NewProjectileData->StaticMesh);
-	StaticMeshComponent->SetMaterial(0, NewProjectileData->Material);
-	StaticMeshComponent->SetRelativeScale3D(FVector(NewProjectileData->MeshScale));
-	StaticMeshComponent->SetRelativeRotation(NewProjectileData->MeshRotation);
+	else
+	{
+		StaticMeshComponent->SetStaticMesh(NewProjectileData->StaticMesh);
+		StaticMeshComponent->SetMaterial(0, NewProjectileData->Material);
+		StaticMeshComponent->SetRelativeScale3D(FVector(NewProjectileData->MeshScale));
+		StaticMeshComponent->SetRelativeRotation(NewProjectileData->MeshRotation);
+	}
 	Speed = NewSpeed * BaseSpeed;
 	Damage = NewDamage;
 	PenetrateCount = NewPierce;
 	Distance = NewArea * BaseDistance;
+	Knockback = NewKnockback;
 }
 
 void AProjectileBase::Attack(AActor* TargetActor)
@@ -91,6 +94,11 @@ void AProjectileBase::Deactivate()
 float AProjectileBase::GetSpeed() const
 {
 	return Speed;
+}
+
+float AProjectileBase::GetKnockback() const
+{
+	return Knockback;
 }
 
 void AProjectileBase::Move(float DeltaTime)

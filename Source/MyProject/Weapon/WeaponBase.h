@@ -2,9 +2,28 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "WeaponBase.generated.h"
+#include <CoreMinimal.h>
+#include <GameFramework/Actor.h>
+#include <Engine/DataTable.h>
+
+#include <WeaponBase.generated.h>
+
+class UTexture2D;
+USTRUCT()
+struct FWeaponData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FText WeaponName;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UTexture2D* WeaponImage;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<AWeaponBase> WeaponClass;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<FText> DiscriptionTextArray;
+};
 
 class ASpawnManager;
 class UStatusComponent;
@@ -49,13 +68,15 @@ protected:
 
 	// Level
 	UPROPERTY(EditDefaultsOnly)
-	int CurrentLevel;
+	int CurrentLevel = 1;
 	UPROPERTY(EditDefaultsOnly)
 	int MaxLevel;
 
 	// WeaponStat
 	UPROPERTY(EditDefaultsOnly)
 	float WeaponDamage;
+	UPROPERTY(EditDefaultsOnly)
+	float WeaponSpeed;
 	UPROPERTY(EditDefaultsOnly)
 	float WeaponArea;
 	UPROPERTY(EditDefaultsOnly)
@@ -64,6 +85,8 @@ protected:
 	float CurrentWeaponDuration;
 	UPROPERTY(EditDefaultsOnly)
 	int32 WeaponPierce;
+	UPROPERTY(EditDefaultsOnly)
+	float WeaponKnockback;
 
 	UPROPERTY(EditDefaultsOnly)
 	float ProjectileSpeed;

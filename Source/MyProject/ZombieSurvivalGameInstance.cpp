@@ -4,7 +4,7 @@
 #include "ZombieSurvivalGameInstance.h"
 
 #include "ObjectPooling/ProjectileBase.h"
-#include "Inventory/InventoryComponent.h"
+#include "Weapon/WeaponBase.h"
 #include "ObjectPooling/ItemBase.h"
 
 FWeaponData* UZombieSurvivalGameInstance::GetWeaponData(FName WeaponName) const

@@ -44,6 +44,9 @@ public:
 	virtual void Deactivate() override;
 
 	UFUNCTION()
+	void SetDefaultMaterial();
+
+	UFUNCTION()
 	void OnMoveBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void OnMoveBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
@@ -104,6 +107,18 @@ private:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Enemy", Meta = (AllowPrivateAccess))
 	float ImpulsePower;
+
+
+	// ChangeMaterial;
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
+	float ChangeMaterialTime;
+	float CurrentChangeMaterialTime;
+	// Materials
+	TArray<UMaterialInterface*> DefaultMaterials;
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
+	UMaterialInterface* HittedMaterial;
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
+	float BaseKnockback;
 
 	// Component
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enemy", Meta = (AllowPrivateAccess))

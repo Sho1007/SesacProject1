@@ -20,7 +20,7 @@ public:
 	virtual void BeginPlay() override;
 
 	UFUNCTION(CallInEditor)
-	void AddProjectile(int AddCount = 1);
+	void AddProjectile();
 
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void Attack() override;
@@ -29,13 +29,19 @@ public:
 
 	virtual void LevelUp() override;
 
+	UFUNCTION()
+	void UpdateArea(float NewArea);
+
+private:
+	void SetAreaAndRotation();
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Bible", Meta = (AllowPrivateAccess))
 	bool bIsAttacking;
 	UPROPERTY(EditDefaultsOnly, Category = "Bible", Meta = (AllowPrivateAccess))
-	float RotateSpeed;
+	float BaseSpeed;
 	UPROPERTY(EditDefaultsOnly, Category = "Bible", Meta = (AllowPrivateAccess))
-	float ProjectileDistance;
+	float BaseArea;
 	UPROPERTY(EditDefaultsOnly, Category = "Bible", Meta = (AllowPrivateAccess))
 	TArray<ABibleProjectile*> ProjectileArray;
 	UPROPERTY(EditDefaultsOnly, Category = "Bible", Meta = (AllowPrivateAccess))

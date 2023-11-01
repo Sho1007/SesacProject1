@@ -10,10 +10,10 @@
 #include <Animation/UMGSequencePlayer.h>
 #include <Animation/WidgetAnimation.h>
 
+#include "../Weapon/WeaponBase.h"
 #include "../Inventory/InventoryComponent.h"
 #include "../ZombieSurvivalGameInstance.h"
 #include "../ObjectPooling/ItemBase.h"
-
 
 bool UBoxWidget::Initialize()
 {

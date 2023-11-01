@@ -6,6 +6,7 @@
 #include "../Widget/InGameWidget.h"
 #include "GameFramework/Character.h"
 #include "../Inventory/InventoryComponent.h"
+#include "MyProject/Character/StatusComponent.h"
 
 void AInGamePlayerController::BeginPlay()
 {
@@ -41,4 +42,42 @@ void AInGamePlayerController::ShowBoxWidget(int32 ItemCount)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AInGamePlayerController::ShowBoxWidget) Character has no Inventory Component"));
 	}
+}
+
+void AInGamePlayerController::ShowLevelUpWidget()
+{
+	if (UInventoryComponent* InventoryComponent = Cast<UInventoryComponent>(GetCharacter()->GetComponentByClass(UInventoryComponent::StaticClass())))
+	{
+		int32 ItemCount = 3;
+		if (UStatusComponent* StatusComponent = Cast<UStatusComponent>(GetCharacter()->GetComponentByClass(UStatusComponent::StaticClass())))
+		{
+			if (StatusComponent->GetLuck() >= 100.0f)
+			{
+				ItemCount++;
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("AInGamePlayerController::ShowLevelUpWidget) Player has no Status Component"));
+		}
+
+		TArray<FName> ItemNameArray;
+		InventoryComponent->GetAddableItemName(ItemNameArray, ItemCount);
+		SetPause(true);
+		SetInputMode(FInputModeUIOnly());
+		SetShowMouseCursor(true);
+		InGameWidget->ShowLevelUpWidget(ItemNameArray);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AInGamePlayerController::ShowBoxWidget) Character has no Inventory Component"));
+	}
+}
+
+void AInGamePlayerController::HideLevelUpWidget()
+{
+	SetPause(false);
+	SetInputMode(FInputModeGameOnly());
+	SetShowMouseCursor(false);
+	InGameWidget->HideLevelUpWidget();
 }
