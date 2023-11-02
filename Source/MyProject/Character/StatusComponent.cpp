@@ -32,102 +32,152 @@ void UStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
+void UStatusComponent::TestAdd()
+{
+	if (TestType == TEXT("MaxHealth"))
+	{
+		SetMaxHealth(TestValue);
+	}
+	else if (TestType == TEXT("Recovery"))
+	{
+		SetRecovery(TestValue);
+	}
+	else if (TestType == TEXT("Armor"))
+	{
+		SetArmor(TestValue);
+	}
+	else if (TestType == TEXT("MoveSpeed"))
+	{
+		SetMoveSpeed(TestValue);
+	}
+	else if (TestType == TEXT("Might"))
+	{
+		SetMight(TestValue);
+	}
+	else if (TestType == TEXT("Area"))
+	{
+		SetArea(TestValue);
+	}
+	else if (TestType == TEXT("Speed"))
+	{
+		SetSpeed(TestValue);
+	}
+	else if (TestType == TEXT("Duration"))
+	{
+		SetDuration(TestValue);
+	}
+	else if (TestType == TEXT("Amount"))
+	{
+		SetAmount((int32)TestValue);
+	}
+	else if (TestType == TEXT("Cooldown"))
+	{
+		SetCooldown(TestValue);
+	}
+}
+
 void UStatusComponent::SetMaxHealth(float NewMaxHealth)
 {
 	MaxHealth = NewMaxHealth;
 
-	OnMaxHealthUpdated.Broadcast(MaxHealth);
+	OnMaxHealthUpdated.ExecuteIfBound(MaxHealth);
 }
 
 void UStatusComponent::SetRecovery(float NewRecovery)
 {
 	Recovery = NewRecovery;
 
-	OnRecoveryUpdated.Broadcast(Recovery);
+	OnRecoveryUpdated.ExecuteIfBound(Recovery);
 }
 
 void UStatusComponent::SetArmor(float NewArmor)
 {
 	Armor = NewArmor;
 
-	OnArmorUpdated.Broadcast(Armor);
+	OnArmorUpdated.ExecuteIfBound(Armor);
 }
 
 void UStatusComponent::SetMoveSpeed(float NewMoveSpeed)
 {
 	MoveSpeed = NewMoveSpeed;
 
-	OnMoveSpeedUpdated.Broadcast(MoveSpeed);
+	OnMoveSpeedUpdated.ExecuteIfBound(MoveSpeed);
 }
 
 void UStatusComponent::SetMight(float NewMight)
 {
+	if (NewMight > 10.0f) NewMight = 10.0f;
 	Might = NewMight;
 
-	OnMightUpdated.Broadcast(Might);
+	OnMightUpdated.ExecuteIfBound(Might);
 }
 
 void UStatusComponent::SetArea(float NewArea)
 {
+	if (NewArea > 10.0f) NewArea = 10.0f;
 	Area = NewArea;
 
-	OnAreaUpdated.Broadcast(Area);
+	OnAreaUpdated.ExecuteIfBound(Area);
 }
 
 void UStatusComponent::SetSpeed(float NewSpeed)
 {
+	if (NewSpeed > 5.0f) NewSpeed = 5.0f;
 	Speed = NewSpeed;
+	UE_LOG(LogTemp, Warning, TEXT("UStatusComponent::SetSpeed) StatusComponent : %s"), *this->GetName());
 
-	OnSpeedUpdated.Broadcast(Speed);
+	OnSpeedUpdated.ExecuteIfBound(Speed);
 }
 
 void UStatusComponent::SetDuration(float NewDuration)
 {
+	if (NewDuration > 5.0f) NewDuration = 5.0f;
 	Duration = NewDuration;
 
-	OnDurationUpdated.Broadcast(Duration);
+	OnDurationUpdated.ExecuteIfBound(Duration);
 }
 
 void UStatusComponent::SetAmount(float NewAmount)
 {
+	if (NewAmount > 10) NewAmount = 10;
 	Amount = NewAmount;
-
-	OnAmountUpdated.Broadcast(Amount);
+	OnAmountUpdated.ExecuteIfBound(Amount);
 }
 
 void UStatusComponent::SetCooldown(float NewCooldown)
 {
+	if (NewCooldown > 0.9f) NewCooldown = 0.9f;
 	Cooldown = NewCooldown;
 
-	OnCooldownUpdated.Broadcast(Cooldown);
+	OnCooldownUpdated.ExecuteIfBound(Cooldown);
 }
 
 void UStatusComponent::SetLuck(float NewLuck)
 {
 	Luck = NewLuck;
 
-	OnLuckUpdated.Broadcast(Luck);
+	OnLuckUpdated.ExecuteIfBound(Luck);
 }
 
 void UStatusComponent::SetGrowth(float NewGrowth)
 {
 	Growth = NewGrowth;
 
-	OnGrowthUpdated.Broadcast(Growth);
+	OnGrowthUpdated.ExecuteIfBound(Growth);
 }
 
 void UStatusComponent::SetGreed(float NewGreed)
 {
 	Greed = NewGreed;
 
-	OnGreedUpdated.Broadcast(Greed);
+	OnGreedUpdated.ExecuteIfBound(Greed);
 }
 
 void UStatusComponent::SetMagnet(float NewMagnet)
 {
 	Magnet = NewMagnet;
 
-	OnMagnetUpdated.Broadcast(Magnet);
+	OnMagnetUpdated.ExecuteIfBound(Magnet);
 }
 
 float UStatusComponent::GetMaxHealth() const
@@ -170,7 +220,7 @@ float UStatusComponent::GetDuration() const
 	return Duration;
 }
 
-float UStatusComponent::GetAmount() const
+int32 UStatusComponent::GetAmount() const
 {
 	return Amount;
 }

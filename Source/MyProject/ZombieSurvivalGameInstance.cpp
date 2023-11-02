@@ -5,6 +5,7 @@
 
 #include "ObjectPooling/ProjectileBase.h"
 #include "Weapon/WeaponBase.h"
+#include "Weapon/EquipmentBase.h"
 #include "ObjectPooling/ItemBase.h"
 
 FWeaponData* UZombieSurvivalGameInstance::GetWeaponData(FName WeaponName) const
@@ -16,6 +17,17 @@ FWeaponData* UZombieSurvivalGameInstance::GetWeaponData(FName WeaponName) const
 	}
 
 	return WeaponDataTable->FindRow<FWeaponData>(WeaponName, "");
+}
+
+FEquipmentData* UZombieSurvivalGameInstance::GetEquipmentData(FName EquipmentName) const
+{
+	if (EquipmentDataTable == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UZombieSurvivalGameInstance::GetWeaponData) EquipmentDataTable is nullptr"));
+		return nullptr;
+	}
+
+	return EquipmentDataTable->FindRow<FEquipmentData>(EquipmentName, "");
 }
 
 FProjectileData* UZombieSurvivalGameInstance::GetProjectileData(FName ProjectileName) const

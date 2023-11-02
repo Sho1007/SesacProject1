@@ -14,13 +14,13 @@ void ADagger::Init(ASpawnManager* NewSpawnManager)
 
 void ADagger::SpawnDagger()
 {
-	if (SpawnManager && StatusComponent)
+	if (SpawnManager)
 	{
 		SpawnManager->SpawnProjectile(GetActorLocation() + FVector(0, 0, 45), GetActorRotation(), TEXT("Dagger"),
-			ProjectileSpeed * (StatusComponent->GetSpeed() / 100.0f),
-			WeaponDamage * (StatusComponent->GetMight() / 100.0f),
+			ProjectileSpeed * StatusSpeed,
+			WeaponDamage * StatusMight,
 			WeaponPierce,
-			WeaponArea * (StatusComponent->GetArea() / 100.0f),
+			WeaponArea * StatusArea,
 			WeaponKnockback);
 	}
 
@@ -47,7 +47,10 @@ void ADagger::Attack()
 
 	if (ProjectileCount == 0) return;
 
-	CurrentProjectileCount = ProjectileCount + StatusComponent->GetAmount();
+	CurrentProjectileCount = ProjectileCount + StatusAmount;
+
+	UE_LOG(LogTemp, Warning, TEXT("ADagger::Attack) CurrentProjectileCount : %d"), CurrentProjectileCount);
+
 	GetWorld()->GetTimerManager().SetTimer(AttackHandle, this, &ADagger::SpawnDagger, ProjectileInterval, true);
 }
 

@@ -7,6 +7,7 @@
 #include "InventoryComponent.generated.h"
 
 class AWeaponBase;
+class AEquipmentBase;
 UCLASS( Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MYPROJECT_API UInventoryComponent : public UActorComponent
 {
@@ -29,6 +30,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool AddWeapon(FName WeaponName);
 
+	UFUNCTION(BlueprintCallable)
+	bool AddEquipment(FName EquipmentName);
+
 	void GetEnforcableItemName(TArray<FName>& ItemNameArray, int32 ItemCount);
 
 	void GetAddableItemName(TArray<FName>& ItemNameArray, int32 ItemCount);
@@ -37,6 +41,8 @@ public:
 private:
 	UPROPERTY(VisibleInstanceOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
 	TArray<AWeaponBase*> WeaponArray;
+	UPROPERTY(VisibleInstanceOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
+	TArray<AEquipmentBase*> EquipmentArray;
 	UPROPERTY(VisibleInstanceOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
 	TSet<FName> EnforcableNameSet;
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))

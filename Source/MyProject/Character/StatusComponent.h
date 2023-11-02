@@ -6,7 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "StatusComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FDele_Multi_One_Float, float);
+DECLARE_DELEGATE_OneParam(FDele_Multi_One_Float, float);
+DECLARE_DELEGATE_OneParam(FDele_Multi_One_Int, int32);
 
 
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -26,6 +27,13 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION(CallInEditor)
+	void TestAdd();
+
+	UPROPERTY(EditAnywhere)
+	float TestValue;
+	UPROPERTY(EditAnywhere)
+	FName TestType;
 public:
 	// Setter
 	void SetMaxHealth(float NewMaxHealth);
@@ -56,7 +64,7 @@ public:
 	float GetArea() const;
 	float GetSpeed() const;
 	float GetDuration() const;
-	float GetAmount() const;
+	int32 GetAmount() const;
 	float GetCooldown() const;
 
 	float GetLuck() const;
@@ -67,48 +75,48 @@ public:
 
 private:
 	// 최대 체력 - 기본 100
-	UPROPERTY(EditDefaultsOnly, Category = "Status", Meta = (AllowPrivateAccess))
+	UPROPERTY(EditAnywhere, Category = "Status", Meta = (AllowPrivateAccess))
 	float MaxHealth = 100;
 	// 회복 - 기본 0
-	UPROPERTY(EditDefaultsOnly, Category = "Status", Meta = (AllowPrivateAccess))
+	UPROPERTY(EditAnywhere, Category = "Status", Meta = (AllowPrivateAccess))
 	float Recovery;
 	// 방어력 - 기본 0
-	UPROPERTY(EditDefaultsOnly, Category = "Status", Meta = (AllowPrivateAccess))
+	UPROPERTY(EditAnywhere, Category = "Status", Meta = (AllowPrivateAccess))
 	float Armor;
-	// 이동속도 % - 기본 100
-	UPROPERTY(EditDefaultsOnly, Category = "Status", Meta = (AllowPrivateAccess))
-	float MoveSpeed = 100;
+	// 이동속도 % - 기본 1
+	UPROPERTY(EditAnywhere, Category = "Status", Meta = (AllowPrivateAccess))
+	float MoveSpeed = 1;
 
-	// 피해량 % - 기본 100 최대 1000
-	UPROPERTY(EditDefaultsOnly, Category = "Status", Meta = (AllowPrivateAccess))
-	float Might = 100;
-	// 공격 범위 % - 기본 100 최대 1000
-	UPROPERTY(EditDefaultsOnly, Category = "Status", Meta = (AllowPrivateAccess))
-	float Area = 100;
-	// 투사체 속도 % 기본 100 최대 500
-	UPROPERTY(EditDefaultsOnly, Category = "Status", Meta = (AllowPrivateAccess))
-	float Speed = 100;
-	// 지속 시간 % 기본 100 최대 500
-	UPROPERTY(EditDefaultsOnly, Category = "Status", Meta = (AllowPrivateAccess))
-	float Duration = 100;
+	// 피해량 % - 기본 1 최대 10
+	UPROPERTY(EditAnywhere, Category = "Status", Meta = (AllowPrivateAccess))
+	float Might = 1;
+	// 공격 범위 % - 기본 1 최대 10
+	UPROPERTY(EditAnywhere, Category = "Status", Meta = (AllowPrivateAccess))
+	float Area = 1;
+	// 투사체 속도 % 기본 1 최대 5
+	UPROPERTY(EditAnywhere, Category = "Status", Meta = (AllowPrivateAccess))
+	float Speed = 1;
+	// 지속 시간 % 기본 1 최대 5
+	UPROPERTY(EditAnywhere, Category = "Status", Meta = (AllowPrivateAccess))
+	float Duration = 1;
 	// 투사체 수 - 기본 0 최대 10
-	UPROPERTY(EditDefaultsOnly, Category = "Status", Meta = (AllowPrivateAccess))
-	float Amount;
-	// 쿨타임 % 기본 100 최소! 10
-	UPROPERTY(EditDefaultsOnly, Category = "Status", Meta = (AllowPrivateAccess))
-	float Cooldown = 100;
+	UPROPERTY(EditAnywhere, Category = "Status", Meta = (AllowPrivateAccess))
+	int32 Amount = 0;
+	// 쿨타임 % 기본 0 최대 0.9
+	UPROPERTY(EditAnywhere, Category = "Status", Meta = (AllowPrivateAccess))
+	float Cooldown = 0;
 
-	// 행운 % - 기본 100
-	UPROPERTY(EditDefaultsOnly, Category = "Status", Meta = (AllowPrivateAccess))
-	float Luck = 100;
-	// 성장 % - 기본 100 (경험치 퍼센트)
-	UPROPERTY(EditDefaultsOnly, Category = "Status", Meta = (AllowPrivateAccess))
-	float Growth = 100;
-	// 탐욕 % - 기본 100 (기본수치 + 추가 능력치) * 스테이지 골드 보너스
-	UPROPERTY(EditDefaultsOnly, Category = "Status", Meta = (AllowPrivateAccess))
-	float Greed = 100;
-	// 자석 % - 기본 30
-	UPROPERTY(EditDefaultsOnly, Category = "Status", Meta = (AllowPrivateAccess))
+	// 행운 % - 기본 1
+	UPROPERTY(EditAnywhere, Category = "Status", Meta = (AllowPrivateAccess))
+	float Luck = 1;
+	// 성장 % - 기본 1 (경험치 퍼센트)
+	UPROPERTY(EditAnywhere, Category = "Status", Meta = (AllowPrivateAccess))
+	float Growth = 1;
+	// 탐욕 % - 기본 1 (기본수치 + 추가 능력치) * 스테이지 골드 보너스
+	UPROPERTY(EditAnywhere, Category = "Status", Meta = (AllowPrivateAccess))
+	float Greed = 1;
+	// 자석 % - 기본 30 Todo : 얘도 100 으로 나눠서 0.3으로 바꿔야하나?
+	UPROPERTY(EditAnywhere, Category = "Status", Meta = (AllowPrivateAccess))
 	float Magnet = 30;
 
 public:
@@ -123,7 +131,7 @@ public:
 	FDele_Multi_One_Float OnAreaUpdated;
 	FDele_Multi_One_Float OnSpeedUpdated;
 	FDele_Multi_One_Float OnDurationUpdated;
-	FDele_Multi_One_Float OnAmountUpdated;
+	FDele_Multi_One_Int OnAmountUpdated;
 	FDele_Multi_One_Float OnCooldownUpdated;
 
 	FDele_Multi_One_Float OnLuckUpdated;

@@ -14,6 +14,7 @@ AEquipmentBase::AEquipmentBase()
 
 void AEquipmentBase::LevelUp()
 {
+	CurrentLevel++;
 }
 
 // Called when the game starts or when spawned
@@ -42,6 +43,7 @@ void AEquipmentBase::Attach(AActor* OwningCharacter)
 
 void AEquipmentBase::Dettach()
 {
+
 }
 
 int32 AEquipmentBase::GetCurrentLevel() const
@@ -57,4 +59,9 @@ int32 AEquipmentBase::GetMaxLevel() const
 bool AEquipmentBase::IsEnforcable() const
 {
 	return CurrentLevel < MaxLevel;
+}
+
+FName AEquipmentBase::GetEquipmentName() const
+{
+	return EquipmentName;
 }

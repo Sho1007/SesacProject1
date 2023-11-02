@@ -29,8 +29,9 @@ public:
 
 	virtual void LevelUp() override;
 
-	UFUNCTION()
-	void UpdateArea(float NewArea);
+	virtual void UpdateArea(float NewArea) override;
+
+	virtual void UpdateAmount(int32 NewAmount) override;
 
 private:
 	void SetAreaAndRotation();

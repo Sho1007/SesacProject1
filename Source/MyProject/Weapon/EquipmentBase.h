@@ -3,8 +3,26 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include <Engine/DataTable.h>
+#include <GameFramework/Actor.h>
 #include "EquipmentBase.generated.h"
+
+class UTexture2D;
+USTRUCT()
+struct FEquipmentData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FText EquipmentName;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UTexture2D* EqiupmentImage;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<AEquipmentBase> EquipmentClass;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<FText> DiscriptionTextArray;
+};
 
 class UStatusComponent;
 UCLASS()
@@ -33,7 +51,11 @@ public:
 
 	bool IsEnforcable() const;
 
+	FName GetEquipmentName() const;
+
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	FName EquipmentName;
 	UPROPERTY(EditDefaultsOnly)
 	int32 CurrentLevel = 1;
 	UPROPERTY(EditDefaultsOnly)

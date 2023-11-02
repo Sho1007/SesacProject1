@@ -74,9 +74,24 @@ void AWeaponBase::Attach(AActor* OwningCharacter)
 	}
 
 	// Set StatusComponent
+	
 	if (UStatusComponent* NewStatusComponent = Cast<UStatusComponent>(OwningCharacter->GetComponentByClass(UStatusComponent::StaticClass())))
 	{
 		StatusComponent = NewStatusComponent;
+		UE_LOG(LogTemp, Warning, TEXT("AWeaponBase::Attach) StatusComponent :%s"), *StatusComponent->GetName());
+		StatusComponent->OnAreaUpdated.BindUObject(this, &AWeaponBase::UpdateArea);
+		StatusComponent->OnAmountUpdated.BindUObject(this, &AWeaponBase::UpdateAmount);
+		StatusComponent->OnSpeedUpdated.BindUObject(this, &AWeaponBase::UpdateSpeed);
+		StatusComponent->OnMightUpdated.BindUObject(this, &AWeaponBase::UpdateMight);
+		StatusComponent->OnDurationUpdated.BindUObject(this, &AWeaponBase::UpdateDuration);
+		StatusComponent->OnCooldownUpdated.BindUObject(this, &AWeaponBase::UpdateCooldown);
+
+		StatusArea = StatusComponent->GetArea();
+		StatusAmount = StatusComponent->GetAmount();
+		StatusSpeed = StatusComponent->GetSpeed();
+		StatusMight = StatusComponent->GetMight();
+		StatusDuration	= StatusComponent->GetDuration();
+		StatusCooldown = StatusComponent->GetCooldown();
 	}
 	else
 	{
@@ -87,4 +102,34 @@ void AWeaponBase::Attach(AActor* OwningCharacter)
 void AWeaponBase::LevelUp()
 {
 	CurrentLevel++;
+}
+
+void AWeaponBase::UpdateAmount(int32 NewAmount)
+{
+	StatusAmount = NewAmount;
+}
+
+void AWeaponBase::UpdateArea(float NewArea)
+{
+	StatusArea = NewArea;
+}
+
+void AWeaponBase::UpdateSpeed(float NewSpeed)
+{
+	StatusSpeed = NewSpeed;
+}
+
+void AWeaponBase::UpdateMight(float NewMight)
+{
+	StatusMight = NewMight;
+}
+
+void AWeaponBase::UpdateDuration(float NewDuration)
+{
+	StatusDuration = NewDuration;
+}
+
+void AWeaponBase::UpdateCooldown(float NewCooldown)
+{
+	StatusCooldown = NewCooldown;
 }

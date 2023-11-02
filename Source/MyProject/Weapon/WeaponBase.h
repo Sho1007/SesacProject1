@@ -59,6 +59,21 @@ public:
 
 	virtual void LevelUp();
 
+public:
+	// bind
+	UFUNCTION()
+	virtual void UpdateAmount(int32 NewAmount);
+	UFUNCTION()
+	virtual void UpdateArea(float NewArea);
+	UFUNCTION()
+	virtual void UpdateSpeed(float NewSpeed);
+	UFUNCTION()
+	virtual void UpdateMight(float NewMight);
+	UFUNCTION()
+	virtual void UpdateDuration(float NewDuration);
+	UFUNCTION()
+	virtual void UpdateCooldown(float NewCooldown);
+
 protected:
 	// Weapon Information
 	UPROPERTY(EditDefaultsOnly)
@@ -108,4 +123,12 @@ protected:
 	ASpawnManager* SpawnManager;
 	UPROPERTY(Meta = (AllowPrivateAccess))
 	UStatusComponent* StatusComponent;
+
+	// From Status Component
+	int32 StatusAmount;
+	float StatusArea;
+	float StatusSpeed;
+	float StatusMight;
+	float StatusDuration;
+	float StatusCooldown;
 };

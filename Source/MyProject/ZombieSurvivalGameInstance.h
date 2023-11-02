@@ -11,6 +11,7 @@
  */
 class UDataTable;
 struct FWeaponData;
+struct FEquipmentData;
 struct FProjectileData;
 struct FItemData;
 UCLASS()
@@ -20,11 +21,14 @@ class MYPROJECT_API UZombieSurvivalGameInstance : public UGameInstance
 
 public:
 	FWeaponData* GetWeaponData(FName WeaponName) const;
+	FEquipmentData* GetEquipmentData(FName EquipmentName) const;
 	FProjectileData* GetProjectileData(FName ProjectileName) const;
 	FItemData* GetItemData(FName ItemName) const;
 private:
 	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))
 	UDataTable* WeaponDataTable;
+	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))
+	UDataTable* EquipmentDataTable;
 	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))
 	UDataTable* ProjectileDataTable;
 	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))

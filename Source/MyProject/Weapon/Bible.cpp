@@ -24,7 +24,7 @@ void ABible::AddProjectile()
 
 		ProjectileArray.Empty();
 
-		for (int i = 0; i < ProjectileCount + StatusComponent->GetAmount(); ++i)
+		for (int i = 0; i < ProjectileCount + StatusAmount; ++i)
 		{
 			ABibleProjectile* Projectile = GetWorld()->SpawnActor<ABibleProjectile>(BibleProjectileClass);
 			Projectile->Deactivate();
@@ -48,11 +48,7 @@ void ABible::Tick(float DeltaSeconds)
 	{
 		CurrentWeaponDuration += DeltaSeconds;
 
-		if (StatusComponent == nullptr)
-		{
-			UE_LOG(LogTemp, Error, TEXT("ABible::Tick) StatusComponent is nullptr"));
-		}
-		if (CurrentWeaponDuration >= WeaponDuration * (StatusComponent->GetDuration() / 100.0f))
+		if (CurrentWeaponDuration >= WeaponDuration * StatusDuration)
 		{
 			bIsAttacking = false;
 			CurrentWeaponDuration = 0.0f;
@@ -66,7 +62,7 @@ void ABible::Tick(float DeltaSeconds)
 	{
 		CurrentAttackCoolTime += DeltaSeconds;
 
-		if (CurrentAttackCoolTime >= AttackCoolTime + (AttackCoolTime * (StatusComponent->GetCooldown() / 100.0f)))
+		if (CurrentAttackCoolTime >= AttackCoolTime - (AttackCoolTime * StatusCooldown))
 		{
 			bIsAttacking = true;
 
@@ -74,7 +70,7 @@ void ABible::Tick(float DeltaSeconds)
 		}
 	}
 
-	AddActorWorldRotation(FRotator(0, DeltaSeconds * BaseSpeed * WeaponSpeed, 0));
+	AddActorWorldRotation(FRotator(0, DeltaSeconds * BaseSpeed * WeaponSpeed * StatusSpeed, 0));
 }
 
 void ABible::Attack()
@@ -86,7 +82,7 @@ void ABible::Attack()
 
 	for (int i = 0; i < ProjectileArray.Num(); ++i)
 	{
-		ProjectileArray[i]->SetProjectileData(nullptr, 0, WeaponDamage * (StatusComponent->GetMight() / 100), -1, WeaponArea * (StatusComponent->GetArea() / 100), WeaponKnockback);
+		ProjectileArray[i]->SetProjectileData(nullptr, 0, WeaponDamage * StatusMight, -1, WeaponArea * StatusArea, WeaponKnockback);
 		ProjectileArray[i]->Activate();
 	}
 }
@@ -99,8 +95,6 @@ void ABible::Attach(AActor* OwningCharacter)
 	{
 		this->AttachToActor(Character, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false));
 	}
-
-	StatusComponent->OnAreaUpdated.AddUObject(this, &ABible::UpdateArea);
 
 	AddProjectile();
 }
@@ -142,14 +136,22 @@ void ABible::LevelUp()
 
 void ABible::UpdateArea(float NewArea)
 {
+	Super::UpdateArea(NewArea);
 	SetAreaAndRotation();
+}
+
+void ABible::UpdateAmount(int32 NewAmount)
+{
+	Super::UpdateAmount(NewAmount);
+
+	AddProjectile();
 }
 
 void ABible::SetAreaAndRotation()
 {
 	for (int i = 0; i < ProjectileArray.Num(); ++i)
 	{
-		FVector RelativeLocation(BaseArea * WeaponArea * (StatusComponent->GetArea() / 100.0f), 0, 0);
+		FVector RelativeLocation(BaseArea * WeaponArea * StatusArea, 0, 0);
 		RelativeLocation = RelativeLocation.RotateAngleAxis((360 / ProjectileArray.Num()) * i, { 0, 0, 1 });
 		ProjectileArray[i]->SetActorRelativeLocation(RelativeLocation);
 	}

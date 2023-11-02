@@ -22,6 +22,8 @@ public:
 	void SpawnDagger();
 
 	virtual void Attach(AActor* OwningCharacter) override;
+
+
 protected:
 	virtual void Attack() override;
 

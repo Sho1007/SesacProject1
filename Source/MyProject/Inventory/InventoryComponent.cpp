@@ -4,6 +4,7 @@
 #include "../Inventory/InventoryComponent.h"
 
 #include "../Weapon/WeaponBase.h"
+#include "../Weapon/EquipmentBase.h"
 
 #include "../ZombieSurvivalGameInstance.h"
 
@@ -29,7 +30,10 @@ void UInventoryComponent::BeginPlay()
 
 void UInventoryComponent::TestAddFunction()
 {
-	AddWeapon(TestWeaponName);
+	if (AddWeapon(TestWeaponName) == false)
+	{
+		AddEquipment(TestWeaponName);
+	}
 }
 
 bool UInventoryComponent::AddWeapon(FName WeaponName)
@@ -96,10 +100,82 @@ bool UInventoryComponent::AddWeapon(FName WeaponName)
 		else
 		{
 			// 강화 불가
-			UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddWeapon"));
+			UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddWeapon) %s is already Max Level"), *TargetWeapon->GetWeaponName().ToString());
 			return false;
 		}
 	}
+	return true;
+}
+
+bool UInventoryComponent::AddEquipment(FName EquipmentName)
+{
+	UZombieSurvivalGameInstance* GameInstance = GetWorld()->GetGameInstance<UZombieSurvivalGameInstance>();
+	if (GameInstance == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddEquipment) GameInstance is not UZombieSurvivalGameInstance"));
+		return false;
+	}
+
+	FEquipmentData* EquipmentData = GameInstance->GetEquipmentData(EquipmentName);
+
+	if (EquipmentData == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddEquipment) Cannot Find Weapon Data From WeaponName"));
+		return false;
+	}
+
+	AEquipmentBase* TargetEquipment = nullptr;
+
+	// Check Is Equipment Already In Array
+	for (int i = 0; i < EquipmentArray.Num(); ++i)
+	{
+		if (EquipmentArray[i]->GetEquipmentName() == EquipmentName)
+		{
+			TargetEquipment = EquipmentArray[i];
+			break;
+		}
+	}
+
+	if (TargetEquipment == nullptr)
+	{
+		// Add New Equipment
+		FActorSpawnParameters Params;
+		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		AEquipmentBase* Equipment = GetWorld()->SpawnActor<AEquipmentBase>(EquipmentData->EquipmentClass, GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation(), Params);
+		if (Equipment == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddEquipment) Failed to spawn Equipment"));
+			return false;
+		}
+		Equipment->Attach(GetOwner());
+		EquipmentArray.Add(Equipment);
+		if (Equipment->IsEnforcable()) EnforcableNameSet.Add(Equipment->GetEquipmentName());
+
+		if (NewItemNameSet.Contains(EquipmentName))
+		{
+			NewItemNameSet.Remove(NewItemNameSet.FindId(EquipmentName));
+		}
+	}
+	else
+	{
+		if (EnforcableNameSet.Contains(TargetEquipment->GetEquipmentName()))
+		{
+			// Enforce Equipment
+			TargetEquipment->LevelUp();
+
+			if (TargetEquipment->IsEnforcable() == false)
+			{
+				EnforcableNameSet.Remove(EnforcableNameSet.FindId(TargetEquipment->GetEquipmentName()));
+			}
+		}
+		else
+		{
+			// 강화 불가
+			UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddEquipment) %s is already Max Level"), *TargetEquipment->GetEquipmentName().ToString());
+			return false;
+		}
+	}
+
 	return true;
 }
 
