@@ -14,6 +14,7 @@
 #include "../Inventory/InventoryComponent.h"
 #include "../ZombieSurvivalGameInstance.h"
 #include "../ObjectPooling/ItemBase.h"
+#include "MyProject/Weapon/EquipmentBase.h"
 
 bool UBoxWidget::Initialize()
 {
@@ -165,6 +166,13 @@ void UBoxWidget::SetItemImage()
 				FWeaponData* WeaponData = GameInstance->GetWeaponData(ItemNameArray[CurrentItemIndex]);
 				check(WeaponData);
 				ItemImage = WeaponData->WeaponImage;
+			}
+			else if (InventoryComponent->AddEquipment(ItemNameArray[CurrentItemIndex]))
+			{
+				// GameInstance 에서 DataTable 찾아서 FItemData 에서 Weapon Image 읽어오기
+				FEquipmentData* EquipmentData = GameInstance->GetEquipmentData(ItemNameArray[CurrentItemIndex]);
+				check(EquipmentData);
+				ItemImage = EquipmentData->EqiupmentImage;
 			}
 			else
 			{

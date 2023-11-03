@@ -43,6 +43,10 @@ private:
 	bool bIsDelay;
 	float CurrentDelayTime;
 
+	// Sound
+	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))
+	USoundBase* BoxFindSound;
+
 	// Animation
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Transient, Meta = (AllowPrivateAccess, BindWidgetAnim))
 	UWidgetAnimation* BoxAnimation;

@@ -32,14 +32,12 @@ void APoolingActor::Activate()
 {
 	bIsActivated = true;
 	SetActorTickEnabled(bIsActivated);
-	SetActorHiddenInGame(!bIsActivated);
 }
 
 void APoolingActor::Deactivate()
 {
 	bIsActivated = false;
 	SetActorTickEnabled(bIsActivated);
-	SetActorHiddenInGame(!bIsActivated);
 }
 
 void APoolingActor::Init(ASpawnManager* NewSpawnManager, int32 NewPoolingIndex)

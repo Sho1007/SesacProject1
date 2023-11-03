@@ -68,23 +68,19 @@ void AWeaponBase::Attach(AActor* OwningCharacter)
 	TActorIterator<AActor> It(GetWorld(), ASpawnManager::StaticClass());
 	SpawnManager = Cast<ASpawnManager>(*It);
 
-	if (SpawnManager == false)
-	{
-		UE_LOG(LogTemp, Error, TEXT("ADagger::Attach) SpawnManager is nullptr"));
-	}
+	check(SpawnManager);
 
 	// Set StatusComponent
 	
 	if (UStatusComponent* NewStatusComponent = Cast<UStatusComponent>(OwningCharacter->GetComponentByClass(UStatusComponent::StaticClass())))
 	{
 		StatusComponent = NewStatusComponent;
-		UE_LOG(LogTemp, Warning, TEXT("AWeaponBase::Attach) StatusComponent :%s"), *StatusComponent->GetName());
-		StatusComponent->OnAreaUpdated.BindUObject(this, &AWeaponBase::UpdateArea);
-		StatusComponent->OnAmountUpdated.BindUObject(this, &AWeaponBase::UpdateAmount);
-		StatusComponent->OnSpeedUpdated.BindUObject(this, &AWeaponBase::UpdateSpeed);
-		StatusComponent->OnMightUpdated.BindUObject(this, &AWeaponBase::UpdateMight);
-		StatusComponent->OnDurationUpdated.BindUObject(this, &AWeaponBase::UpdateDuration);
-		StatusComponent->OnCooldownUpdated.BindUObject(this, &AWeaponBase::UpdateCooldown);
+		StatusComponent->OnAreaUpdated.AddUObject(this, &AWeaponBase::UpdateArea);
+		StatusComponent->OnAmountUpdated.AddUObject(this, &AWeaponBase::UpdateAmount);
+		StatusComponent->OnSpeedUpdated.AddUObject(this, &AWeaponBase::UpdateSpeed);
+		StatusComponent->OnMightUpdated.AddUObject(this, &AWeaponBase::UpdateMight);
+		StatusComponent->OnDurationUpdated.AddUObject(this, &AWeaponBase::UpdateDuration);
+		StatusComponent->OnCooldownUpdated.AddUObject(this, &AWeaponBase::UpdateCooldown);
 
 		StatusArea = StatusComponent->GetArea();
 		StatusAmount = StatusComponent->GetAmount();

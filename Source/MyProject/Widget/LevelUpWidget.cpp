@@ -5,6 +5,7 @@
 
 #include <Components/VerticalBox.h>
 #include <Components/TextBlock.h>
+#include <Kismet/GameplayStatics.h>
 
 #include "LevelUpSlotWidget.h"
 
@@ -12,9 +13,14 @@
 
 void ULevelUpWidget::ShowWidget(const TArray<FName>& ItemNameArray)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ULevelUpWidget::ShowWidget"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULevelUpWidget::ShowWidget"));
 
 	// Turn off all children
+
+	check(LevelUpSound);
+	UGameplayStatics::PlaySound2D(GetWorld(), LevelUpSound);
+
+
 	for (int i = 0; i < VB_ItemSlot->GetChildrenCount(); ++i)
 	{
 		VB_ItemSlot->GetChildAt(i)->SetVisibility(ESlateVisibility::Collapsed);

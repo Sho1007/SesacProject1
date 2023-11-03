@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+	// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "../Widget/LevelUpSlotWidget.h"
@@ -8,54 +8,60 @@
 #include <Components/Image.h>
 #include <Components/TextBlock.h>
 #include "MyProject/ZombieSurvivalGameInstance.h"
-#include "MyProject/Character/StatusComponent.h"
 #include "MyProject/Inventory/InventoryComponent.h"
 #include "../Weapon/WeaponBase.h"
+#include "../Weapon/EquipmentBase.h"
+#include "MyProject/ObjectPooling/ItemBase.h"
 #include "MyProject/PlayerController/InGamePlayerController.h"
 
 void ULevelUpSlotWidget::Init(FName NewItemName)
 {
-	if (UZombieSurvivalGameInstance* GameInstance = GetGameInstance<UZombieSurvivalGameInstance>())
+	UZombieSurvivalGameInstance* GameInstance = GetGameInstance<UZombieSurvivalGameInstance>();
+	check(GameInstance);
+	UInventoryComponent* InventoryComponent = Cast<UInventoryComponent>(GetOwningPlayerPawn()->GetComponentByClass(UInventoryComponent::StaticClass()));
+	check(InventoryComponent);
+
+	ItemName = NewItemName;
+
+	SetVisibility(ESlateVisibility::Visible);
+
+	int32 ItemLevel = InventoryComponent->GetItemLevel(ItemName);
+	if (FWeaponData* WeaponData = GameInstance->GetWeaponData(ItemName))
 	{
-		if (UInventoryComponent* InventoryComponent = Cast<UInventoryComponent>(GetOwningPlayerPawn()->GetComponentByClass(UInventoryComponent::StaticClass())))
-		{
-			ItemName = NewItemName;
+		Img_ItemImage->SetBrushFromTexture(WeaponData->WeaponImage);
+		//Img_ItemImage->SetDesiredSizeOverride(FVector2D(100, 100));
+		Txt_ItemName->SetText(WeaponData->WeaponName);
+		Txt_ItemDiscription->SetText(WeaponData->DiscriptionTextArray[ItemLevel]);
+	}
+	else if (FEquipmentData* EquipmentData = GameInstance->GetEquipmentData(ItemName))
+	{
+		Img_ItemImage->SetBrushFromTexture(EquipmentData->EqiupmentImage);
+		//Img_ItemImage->SetDesiredSizeOverride(FVector2D(100, 100));
+		Txt_ItemName->SetText(EquipmentData->EquipmentName);
+		Txt_ItemDiscription->SetText(EquipmentData->DiscriptionTextArray[ItemLevel]);
+	}
+	else if (FItemData* ItemData = GameInstance->GetItemData(ItemName))
+	{
+		Img_ItemImage->SetBrushFromTexture(ItemData->ItemImage);
+		//Img_ItemImage->SetDesiredSizeOverride(FVector2D(100, 100));
+		Txt_ItemName->SetText(ItemData->ItemName);
+		Txt_ItemDiscription->SetText(ItemData->DiscriptionTextArray[ItemLevel]);
 
-			if (FWeaponData* WeaponData = GameInstance->GetWeaponData(ItemName))
-			{
-				Img_ItemImage->SetBrushFromTexture(WeaponData->WeaponImage);
-				Txt_ItemName->SetText(WeaponData->WeaponName);
+		HB_ItemLevel->SetVisibility(ESlateVisibility::Collapsed);
+		Txt_NewWeapon->SetVisibility(ESlateVisibility::Collapsed);
+		return;
+	}
 
-				int32 ItemLevel = InventoryComponent->GetItemLevel(ItemName);
-				if (ItemLevel > 0)
-				{
-					HB_ItemLevel->SetVisibility(ESlateVisibility::Visible);
-					Txt_ItemLevel->SetText(FText::FromString(FString::FromInt(ItemLevel + 1)));
-					Txt_NewWeapon->SetVisibility(ESlateVisibility::Collapsed);
-				}
-				else
-				{
-					HB_ItemLevel->SetVisibility(ESlateVisibility::Collapsed);
-					Txt_NewWeapon->SetVisibility(ESlateVisibility::Visible);
-				}
-
-				Txt_ItemDiscription->SetText(WeaponData->DiscriptionTextArray[ItemLevel]);
-			}
-			else if (true)
-			{
-				// Todo : Equipment Data
-			}
-
-			SetVisibility(ESlateVisibility::Visible);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("ULevelUpSlotWidget::Init) Player has no Inventory Component"));
-		}
+	if (ItemLevel > 0)
+	{
+		HB_ItemLevel->SetVisibility(ESlateVisibility::Visible);
+		Txt_ItemLevel->SetText(FText::FromString(FString::FromInt(ItemLevel + 1)));
+		Txt_NewWeapon->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("ULevelUpSlotWidget::Init) GameInstance is invalid"));
+		HB_ItemLevel->SetVisibility(ESlateVisibility::Collapsed);
+		Txt_NewWeapon->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
@@ -72,22 +78,22 @@ void ULevelUpSlotWidget::OnSelectItemButtonClicked()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("ULevelUpSlotWidget::OnSelectItemButtonClicked) ItemName : %s"), *ItemName.ToString());
 
+	AInGamePlayerController* PC = GetOwningPlayer<AInGamePlayerController>();
+	check(PC);
+
 	if (UInventoryComponent* InventoryComponent = Cast<UInventoryComponent>(GetOwningPlayerPawn()->GetComponentByClass(UInventoryComponent::StaticClass())))
 	{
 		if (InventoryComponent->AddWeapon(ItemName))
 		{
-			if (AInGamePlayerController* PC = GetOwningPlayer<AInGamePlayerController>())
-			{
-				PC->HideLevelUpWidget();
-			}
-			else
-			{
-				UE_LOG(LogTemp, Error, TEXT("ULevelUpSlotWidget::OnSelectItemButtonClicked) Player Controller is invalid"));
-			}
+			PC->HideLevelUpWidget();
 		}
-		else
+		else if (InventoryComponent->AddEquipment(ItemName))
 		{
-			// Todo : Equipment
+			PC->HideLevelUpWidget();
+		}
+		else if (InventoryComponent->AddItem(ItemName))
+		{
+			PC->HideLevelUpWidget();
 		}
 	}
 }

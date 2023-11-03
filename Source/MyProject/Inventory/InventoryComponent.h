@@ -33,18 +33,37 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool AddEquipment(FName EquipmentName);
 
+	UFUNCTION(BlueprintCallable)
+	bool AddItem(FName ItemName);
+
 	void GetEnforcableItemName(TArray<FName>& ItemNameArray, int32 ItemCount);
 
-	void GetAddableItemName(TArray<FName>& ItemNameArray, int32 ItemCount);
+	void GetAddableItemName(TArray<FName>& ItemNameArray, int32 ItemCount, bool bIsLevelUp);
 
 	int GetItemLevel(FName ItemName);
+
+	void RemoveIngredient(FName EvolvedWeaponName);
 private:
 	UPROPERTY(VisibleInstanceOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
 	TArray<AWeaponBase*> WeaponArray;
 	UPROPERTY(VisibleInstanceOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
 	TArray<AEquipmentBase*> EquipmentArray;
+
+	// 강화 가능한 무기 / 장비 이름 셋
 	UPROPERTY(VisibleInstanceOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
 	TSet<FName> EnforcableNameSet;
+	// 진화 가능한 무기 이름 배열
+	UPROPERTY(VisibleInstanceOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
+	TArray<FName> EvolvableNameArray;
+
+	// 진화에 필요한 무기 -> 장비 / 장비 -> 무기 이름 맵
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
+	TMap<FName, FName> EvolveRequireMap;
+	// 무기 -> 진화된 무기 이름 맵
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
+	TMap<FName, FName> EvolveWeaponMap;
+
+	// 아직 얻짐 못한 무기 / 장비 이름 셋
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
 	TSet<FName> NewItemNameSet;
 };

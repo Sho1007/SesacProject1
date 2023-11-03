@@ -28,6 +28,9 @@ public:
 
 	void OpenBox(ACharacter* TargetCharacter);
 
+	virtual void Activate() override;
+	virtual void Deactivate() override;
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	UBoxComponent* Collider;

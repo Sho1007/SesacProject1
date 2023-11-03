@@ -67,3 +67,17 @@ void ABossBoxBase::OpenBox(ACharacter* TargetCharacter)
 		Destroy();
 	}
 }
+
+void ABossBoxBase::Activate()
+{
+	Super::Activate();
+
+	BoxMesh->SetVisibility(true);
+}
+
+void ABossBoxBase::Deactivate()
+{
+	Super::Deactivate();
+
+	BoxMesh->SetVisibility(false);
+}

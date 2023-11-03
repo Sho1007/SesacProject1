@@ -16,9 +16,13 @@ struct FItemData : public FTableRowBase
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FText ItemName;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UStaticMesh* ItemMesh;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UTexture2D* ItemImage;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<FText> DiscriptionTextArray;
 };
 
 UCLASS()

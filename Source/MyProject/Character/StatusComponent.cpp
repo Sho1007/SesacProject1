@@ -80,28 +80,28 @@ void UStatusComponent::SetMaxHealth(float NewMaxHealth)
 {
 	MaxHealth = NewMaxHealth;
 
-	OnMaxHealthUpdated.ExecuteIfBound(MaxHealth);
+	OnMaxHealthUpdated.Broadcast(MaxHealth);
 }
 
 void UStatusComponent::SetRecovery(float NewRecovery)
 {
 	Recovery = NewRecovery;
 
-	OnRecoveryUpdated.ExecuteIfBound(Recovery);
+	OnRecoveryUpdated.Broadcast(Recovery);
 }
 
 void UStatusComponent::SetArmor(float NewArmor)
 {
 	Armor = NewArmor;
 
-	OnArmorUpdated.ExecuteIfBound(Armor);
+	OnArmorUpdated.Broadcast(Armor);
 }
 
 void UStatusComponent::SetMoveSpeed(float NewMoveSpeed)
 {
 	MoveSpeed = NewMoveSpeed;
 
-	OnMoveSpeedUpdated.ExecuteIfBound(MoveSpeed);
+	OnMoveSpeedUpdated.Broadcast(MoveSpeed);
 }
 
 void UStatusComponent::SetMight(float NewMight)
@@ -109,7 +109,7 @@ void UStatusComponent::SetMight(float NewMight)
 	if (NewMight > 10.0f) NewMight = 10.0f;
 	Might = NewMight;
 
-	OnMightUpdated.ExecuteIfBound(Might);
+	OnMightUpdated.Broadcast(Might);
 }
 
 void UStatusComponent::SetArea(float NewArea)
@@ -117,7 +117,7 @@ void UStatusComponent::SetArea(float NewArea)
 	if (NewArea > 10.0f) NewArea = 10.0f;
 	Area = NewArea;
 
-	OnAreaUpdated.ExecuteIfBound(Area);
+	OnAreaUpdated.Broadcast(Area);
 }
 
 void UStatusComponent::SetSpeed(float NewSpeed)
@@ -126,7 +126,7 @@ void UStatusComponent::SetSpeed(float NewSpeed)
 	Speed = NewSpeed;
 	UE_LOG(LogTemp, Warning, TEXT("UStatusComponent::SetSpeed) StatusComponent : %s"), *this->GetName());
 
-	OnSpeedUpdated.ExecuteIfBound(Speed);
+	OnSpeedUpdated.Broadcast(Speed);
 }
 
 void UStatusComponent::SetDuration(float NewDuration)
@@ -134,14 +134,14 @@ void UStatusComponent::SetDuration(float NewDuration)
 	if (NewDuration > 5.0f) NewDuration = 5.0f;
 	Duration = NewDuration;
 
-	OnDurationUpdated.ExecuteIfBound(Duration);
+	OnDurationUpdated.Broadcast(Duration);
 }
 
 void UStatusComponent::SetAmount(float NewAmount)
 {
 	if (NewAmount > 10) NewAmount = 10;
 	Amount = NewAmount;
-	OnAmountUpdated.ExecuteIfBound(Amount);
+	OnAmountUpdated.Broadcast(Amount);
 }
 
 void UStatusComponent::SetCooldown(float NewCooldown)
@@ -149,35 +149,35 @@ void UStatusComponent::SetCooldown(float NewCooldown)
 	if (NewCooldown > 0.9f) NewCooldown = 0.9f;
 	Cooldown = NewCooldown;
 
-	OnCooldownUpdated.ExecuteIfBound(Cooldown);
+	OnCooldownUpdated.Broadcast(Cooldown);
 }
 
 void UStatusComponent::SetLuck(float NewLuck)
 {
 	Luck = NewLuck;
 
-	OnLuckUpdated.ExecuteIfBound(Luck);
+	OnLuckUpdated.Broadcast(Luck);
 }
 
 void UStatusComponent::SetGrowth(float NewGrowth)
 {
 	Growth = NewGrowth;
 
-	OnGrowthUpdated.ExecuteIfBound(Growth);
+	OnGrowthUpdated.Broadcast(Growth);
 }
 
 void UStatusComponent::SetGreed(float NewGreed)
 {
 	Greed = NewGreed;
 
-	OnGreedUpdated.ExecuteIfBound(Greed);
+	OnGreedUpdated.Broadcast(Greed);
 }
 
 void UStatusComponent::SetMagnet(float NewMagnet)
 {
 	Magnet = NewMagnet;
 
-	OnMagnetUpdated.ExecuteIfBound(Magnet);
+	OnMagnetUpdated.Broadcast(Magnet);
 }
 
 float UStatusComponent::GetMaxHealth() const

@@ -25,7 +25,7 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess))
-	float MultiAttackAvoidTime;
+	float MultiAttackAvoidTime = 1.7f;
 	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess))
 	float ActiveTime;
 	UPROPERTY(Meta = (AllowPrivateAccess))

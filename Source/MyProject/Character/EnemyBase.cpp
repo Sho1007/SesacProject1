@@ -5,15 +5,12 @@
 
 #include <Components/CapsuleComponent.h>
 #include <Components/BoxComponent.h>
-#include <Components/SphereComponent.h>
 #include <GameFramework/Character.h>
-#include <Kismet/KismetSystemLibrary.h>
 #include <Engine/DamageEvents.h>
+#include <Kismet/GameplayStatics.h>
 
 #include "../ObjectPooling/SpawnManager.h"
 #include "MyProject/ObjectPooling/ProjectileBase.h"
-
-#include "UObject/ObjectPtr.h"
 
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -99,11 +96,14 @@ void AEnemyBase::Tick(float DeltaTime)
 float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser)
 {
+	check(ImpactSound);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, GetActorLocation());
+
 	float Result = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	CurrentHealth -= DamageAmount;
 
-	UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::TakeDamage) Damage : %f"), DamageAmount);
+	//UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::TakeDamage) Damage : %f"), DamageAmount);
 
 	if (CurrentHealth <= 0.0f) Die();
 
@@ -133,6 +133,8 @@ void AEnemyBase::Activate()
 {
 	Super::Activate();
 
+	SkeletalMeshComponent->SetVisibility(true);
+
 	CurrentHealth = MaxHealth;
 	ObstacleComponentArray.Empty();
 	CapsuleComponent->SetCollisionProfileName(TEXT("Enemy"));
@@ -142,6 +144,8 @@ void AEnemyBase::Activate()
 void AEnemyBase::Deactivate()
 {
 	Super::Deactivate();
+
+	SkeletalMeshComponent->SetVisibility(false);
 
 	SetDefaultMaterial();
 
@@ -172,14 +176,6 @@ void AEnemyBase::Die()
 			if (LootItemClassArray[i])
 			{
 				AActor* LootItem = GetWorld()->SpawnActor<AActor>(LootItemClassArray[i], GetActorLocation(), GetActorRotation(), Params);
-				if (LootItem)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::Die) LootItem Spawned"));
-				}
-				else
-				{
-					UE_LOG(LogTemp, Warning, TEXT("AEnemyBase::Die) LootItem Not Spawned"));
-				}
 			}
 		}
 	}

@@ -76,6 +76,7 @@ void ABible::Tick(float DeltaSeconds)
 void ABible::Attack()
 {
 	Super::Attack();
+	SetActorRotation(FRotator::ZeroRotator);
 	UE_LOG(LogTemp, Warning, TEXT("ABible::Attack"));
 
 	CurrentAttackCoolTime = 0.0f;

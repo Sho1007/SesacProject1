@@ -59,6 +59,12 @@ protected:
 	void Move(float DeltaTime);
 
 protected:
+	// AvoidMultiHit
+	TArray<AActor*> HitActorArray;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile", Meta = (AllowPrivateAccess))
+	USoundBase* ProjectileSound;
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile", Meta = (AllowPrivateAccess))
 	float BaseDistance = 200.0f;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile", Meta = (AllowPrivateAccess))

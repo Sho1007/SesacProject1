@@ -57,6 +57,8 @@ protected:
 	virtual void Attack();
 	virtual void Respawn();
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
+	USoundBase* ImpactSound;
 	// Loot
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
 	TArray<TSubclassOf<AActor>> LootItemClassArray;

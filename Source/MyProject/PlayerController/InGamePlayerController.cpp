@@ -62,7 +62,7 @@ void AInGamePlayerController::ShowLevelUpWidget()
 		}
 
 		TArray<FName> ItemNameArray;
-		InventoryComponent->GetAddableItemName(ItemNameArray, ItemCount);
+		InventoryComponent->GetAddableItemName(ItemNameArray, ItemCount, true);
 		SetPause(true);
 		SetInputMode(FInputModeUIOnly());
 		SetShowMouseCursor(true);

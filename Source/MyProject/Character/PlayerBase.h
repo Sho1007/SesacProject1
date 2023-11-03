@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "PlayerBase.generated.h"
 
+class UInventoryComponent;
+class UStatusComponent;
 UCLASS()
 class MYPROJECT_API APlayerBase : public ACharacter
 {
@@ -25,4 +27,32 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION()
+	void OnCapsuleComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+public:
+	void AddExp(float NewExp);
+	void LevelUp();
+
+protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float CurrentExp;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float MaxExp;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int32 CurrentLevel;
+
+	// Component
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UInventoryComponent* InventoryComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UStatusComponent* StatusComponent;
+
+public:
+	DECLARE_DELEGATE_TwoParams(FDele_Single_Two_Float_Float, float, float);
+	FDele_Single_Two_Float_Float OnExpUpdated;
+	DECLARE_DELEGATE_OneParam(FDele_Single_One_Int, int32);
+	FDele_Single_One_Int OnLevelUpdated;
 };

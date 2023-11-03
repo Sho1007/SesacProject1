@@ -6,8 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "StatusComponent.generated.h"
 
-DECLARE_DELEGATE_OneParam(FDele_Multi_One_Float, float);
-DECLARE_DELEGATE_OneParam(FDele_Multi_One_Int, int32);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDele_Multi_One_Float, float);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDele_Multi_One_Int, int32);
 
 
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )

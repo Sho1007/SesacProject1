@@ -4,25 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "LevelUpWidget.generated.h"
+#include "ExpBarWidget.generated.h"
 
 /**
  * 
  */
-class UVerticalBox;
+class UProgressBar;
 class UTextBlock;
 UCLASS()
-class MYPROJECT_API ULevelUpWidget : public UUserWidget
+class MYPROJECT_API UExpBarWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
-	void ShowWidget(const TArray<FName>& ItemNameArray);
+	virtual void NativeConstruct() override;
+
+	UFUNCTION()
+	void UpdateExp(float CurrentExp, float MaxExp);
+	UFUNCTION()
+	void UpdateLevel(int32 CurrentLevel);
 private:
-	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))
-	USoundBase* LevelUpSound;
 	UPROPERTY(Meta = (AllowPrivateAccess, BindWidget))
-	UVerticalBox* VB_ItemSlot;
+	UProgressBar* PrgBar_ExpBar;
 	UPROPERTY(Meta = (AllowPrivateAccess, BindWidget))
-	UTextBlock* Txt_LuckInformation;
+	UTextBlock* Txt_Level;
 };

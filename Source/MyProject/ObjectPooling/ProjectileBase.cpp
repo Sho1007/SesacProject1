@@ -5,6 +5,7 @@
 
 #include <Components/SphereComponent.h>
 #include <Engine/DamageEvents.h>
+#include <Kismet/GameplayStatics.h>
 
 AProjectileBase::AProjectileBase()
 {
@@ -22,6 +23,9 @@ void AProjectileBase::OnHitBoxBeginOverlap(UPrimitiveComponent* OverlappedCompon
 {
 	//UE_LOG(LogTemp, Warning, TEXT("AProjectileBase::OnHitBoxBeginOverlap) this : %s, Overlapped Actor : %s"), *GetName(), *OtherActor->GetName());
 
+	if (HitActorArray.Find(OtherActor) != -1) return;
+
+	HitActorArray.Add(OtherActor);
 	Attack(OtherActor);
 
 	if (PenetrateCount != -1 && --PenetrateCount <= 0) Deactivate();
@@ -53,17 +57,14 @@ void AProjectileBase::Tick(float DeltaTime)
 
 void AProjectileBase::SetProjectileData(FProjectileData* NewProjectileData, float NewSpeed, float NewDamage, float NewPierce, float NewArea, float NewKnockback)
 {
-	if (NewProjectileData == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("AProjectileBase::SetProjectileData) ProjectileData is nullptr"));
-	}
-	else
+	if (NewProjectileData != nullptr)
 	{
 		StaticMeshComponent->SetStaticMesh(NewProjectileData->StaticMesh);
 		StaticMeshComponent->SetMaterial(0, NewProjectileData->Material);
 		StaticMeshComponent->SetRelativeScale3D(FVector(NewProjectileData->MeshScale));
 		StaticMeshComponent->SetRelativeRotation(NewProjectileData->MeshRotation);
 	}
+
 	Speed = NewSpeed * BaseSpeed;
 	Damage = NewDamage;
 	PenetrateCount = NewPierce;
@@ -79,15 +80,23 @@ void AProjectileBase::Attack(AActor* TargetActor)
 void AProjectileBase::Activate()
 {
 	Super::Activate();
+
+	StaticMeshComponent->SetVisibility(true);
+
 	HitBox->SetCollisionProfileName(TEXT("Projectile"));
 
 	CurrentDistance = 0.0f;
+
+	if (ProjectileSound) UGameplayStatics::PlaySoundAtLocation(GetWorld(), ProjectileSound, GetActorLocation());
 }
 
 void AProjectileBase::Deactivate()
 {
 	Super::Deactivate();
 
+	StaticMeshComponent->SetVisibility(false);
+
+	HitActorArray.Empty();
 	HitBox->SetCollisionProfileName(TEXT("NoCollision"));
 }
 

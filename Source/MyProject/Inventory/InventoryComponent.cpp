@@ -95,6 +95,17 @@ bool UInventoryComponent::AddWeapon(FName WeaponName)
 			if (TargetWeapon->IsPossibleToLevelUp() == false)
 			{
 				EnforcableNameSet.Remove(EnforcableNameSet.FindId(TargetWeapon->GetWeaponName()));
+
+				FName EquipmentName = EvolveRequireMap[WeaponName];
+
+				for (int i = 0; i < EquipmentArray.Num(); ++i)
+				{
+					if (EquipmentArray[i]->GetEquipmentName() == EquipmentName && EquipmentArray[i]->IsEnforcable() == false)
+					{
+						EvolvableNameArray.Add(EvolveWeaponMap[WeaponName]);
+						break;
+					}
+				}
 			}
 		}
 		else
@@ -166,6 +177,17 @@ bool UInventoryComponent::AddEquipment(FName EquipmentName)
 			if (TargetEquipment->IsEnforcable() == false)
 			{
 				EnforcableNameSet.Remove(EnforcableNameSet.FindId(TargetEquipment->GetEquipmentName()));
+
+				FName WeaponName = EvolveRequireMap[EquipmentName];
+
+				for (int i = 0; i < WeaponArray.Num(); ++i)
+				{
+					if (WeaponArray[i]->GetWeaponName() == WeaponName && WeaponArray[i]->IsPossibleToLevelUp() == false)
+					{
+						EvolvableNameArray.Add(EvolveWeaponMap[WeaponName]);
+						break;
+					}
+				}
 			}
 		}
 		else
@@ -179,26 +201,51 @@ bool UInventoryComponent::AddEquipment(FName EquipmentName)
 	return true;
 }
 
+bool UInventoryComponent::AddItem(FName ItemName)
+{
+	if (ItemName == TEXT("Money"))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddItem) Add Money"));
+		return true;
+	}
+	else if (ItemName == TEXT("Meal"))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddItem) Eat Meal"));
+		return true;
+	}
+
+	return false;
+}
+
 void UInventoryComponent::GetEnforcableItemName(TArray<FName>& ItemNameArray, int32 ItemCount)
 {
+	while (EvolvableNameArray.IsEmpty() == false)
+	{
+		ItemNameArray.Add(EvolvableNameArray[0]);
+		EvolvableNameArray.RemoveAt(0);
+
+		if (ItemNameArray.Num() == ItemCount) break;
+	}
+
 	TArray<FName> Array = EnforcableNameSet.Array();
+
 	if (Array.Num() == 0)
 	{
-		for (int i = 0; i < ItemCount; ++i)
+		while (ItemNameArray.Num() < ItemCount)
 		{
 			ItemNameArray.Add(TEXT("Money"));
 		}
 	}
 	else
 	{
-		for (int i = 0; i < ItemCount; ++i)
+		while (ItemNameArray.Num() < ItemCount)
 		{
 			ItemNameArray.Add(Array[FMath::RandRange(0, EnforcableNameSet.Num() - 1)]);
 		}
 	}
 }
 
-void UInventoryComponent::GetAddableItemName(TArray<FName>& ItemNameArray, int32 ItemCount)
+void UInventoryComponent::GetAddableItemName(TArray<FName>& ItemNameArray, int32 ItemCount, bool bIsLevelUp)
 {
 	TArray<FName> Array = EnforcableNameSet.Array();
 	// How To Get Addable Item Name List?
@@ -213,7 +260,13 @@ void UInventoryComponent::GetAddableItemName(TArray<FName>& ItemNameArray, int32
 			ItemNameArray.Add(Array[Index]);
 			Array.RemoveAt(Index);
 		}
-		else break;
+		else
+		{
+			ItemNameArray.Add("Meal");
+			if (ItemNameArray.Num() == ItemCount) break;
+			ItemNameArray.Add("Money");
+			break;
+		}
 	}
 }
 
@@ -227,7 +280,38 @@ int UInventoryComponent::GetItemLevel(FName ItemName)
 		}
 	}
 
-	// Todo : EqupimentArray Search
+	for (int i = 0; i < EquipmentArray.Num(); ++i)
+	{
+		if (EquipmentArray[i]->GetEquipmentName() == ItemName)
+		{
+			return EquipmentArray[i]->GetCurrentLevel();
+		}
+	}
 
 	return 0;
+}
+
+void UInventoryComponent::RemoveIngredient(FName EvolvedWeaponName)
+{
+	FName WeaponName;
+	for (auto Iter : EvolveWeaponMap)
+	{
+		if (Iter.Value == EvolvedWeaponName)
+		{
+			WeaponName = Iter.Key;
+			break;
+		}
+	}
+	UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::RemoveIngredient) Remove Weapon %s"), *WeaponName.ToString());
+
+	for (int i = 0; i < WeaponArray.Num(); ++i)
+	{
+		if (WeaponArray[i]->GetWeaponName() == WeaponName)
+		{
+			AWeaponBase* DeleteWeapon = WeaponArray[i];
+			WeaponArray.RemoveAt(i);
+			DeleteWeapon->Destroy();
+			break;
+		}
+	}
 }
