@@ -172,13 +172,13 @@ void UBoxWidget::SetItemImage()
 				// GameInstance 에서 DataTable 찾아서 FItemData 에서 Weapon Image 읽어오기
 				FEquipmentData* EquipmentData = GameInstance->GetEquipmentData(ItemNameArray[CurrentItemIndex]);
 				check(EquipmentData);
-				ItemImage = EquipmentData->EqiupmentImage;
+				ItemImage = EquipmentData->EquipmentImage;
 			}
-			else
+			else if (InventoryComponent->AddItem(ItemNameArray[CurrentItemIndex]))
 			{
 				// GameInstance 에서 DataTable 찾아서 FItemData 에서 Money Image 읽어오기
 				// Todo : ObjectPooling 상속 받아서 ItemBase 만들기
-				FItemData* ItemData = GameInstance->GetItemData(TEXT("Money"));
+				FItemData* ItemData = GameInstance->GetItemData(ItemNameArray[CurrentItemIndex]);
 				check(ItemData);
 				ItemImage = ItemData->ItemImage;
 			}

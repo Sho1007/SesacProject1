@@ -22,6 +22,7 @@ class USkeletalMeshComponent;
 class UCapsuleComponent;
 class UBoxComponent;
 class USphereComponent;
+class AZombieSurvivalGameState;
 UCLASS()
 class MYPROJECT_API AEnemyBase : public APoolingActor
 {
@@ -57,6 +58,9 @@ protected:
 	virtual void Attack();
 	virtual void Respawn();
 private:
+	// GameState
+	AZombieSurvivalGameState* GameState;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy", Meta = (AllowPrivateAccess))
 	USoundBase* ImpactSound;
 	// Loot

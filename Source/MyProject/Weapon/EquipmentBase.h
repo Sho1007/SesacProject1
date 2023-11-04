@@ -17,7 +17,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FText EquipmentName;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UTexture2D* EqiupmentImage;
+	UTexture2D* EquipmentImage;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<AEquipmentBase> EquipmentClass;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

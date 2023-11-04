@@ -11,6 +11,7 @@
 
 #include "../ObjectPooling/SpawnManager.h"
 #include "MyProject/ObjectPooling/ProjectileBase.h"
+#include "../ZombieSurvivalGameState.h"
 
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -36,6 +37,9 @@ void AEnemyBase::BeginPlay()
 	Super::BeginPlay();
 	MoveBoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::OnMoveBoxBeginOverlap);
 	MoveBoxComponent->OnComponentEndOverlap.AddDynamic(this, &AEnemyBase::OnMoveBoxEndOverlap);
+
+	GameState = GetWorld()->GetGameState<AZombieSurvivalGameState>();
+	check(GameState);
 }
 
 // Called every frame
@@ -166,6 +170,7 @@ void AEnemyBase::SetDefaultMaterial()
 
 void AEnemyBase::Die()
 {
+	GameState->AddMonsterCount();
 	if (LootItemClassArray.Num() > 0)
 	{
 		FActorSpawnParameters Params;

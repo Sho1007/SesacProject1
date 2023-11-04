@@ -7,6 +7,7 @@
 #include "../Weapon/EquipmentBase.h"
 
 #include "../ZombieSurvivalGameInstance.h"
+#include "MyProject/ZombieSurvivalGameState.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -111,10 +112,13 @@ bool UInventoryComponent::AddWeapon(FName WeaponName)
 		else
 		{
 			// 강화 불가
-			UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddWeapon) %s is already Max Level"), *TargetWeapon->GetWeaponName().ToString());
+			UE_LOG(LogTemp, Warning, TEXT("aUInventoryComponent::AddWeapon) %s is already Max Level"), *TargetWeapon->GetWeaponName().ToString());
 			return false;
 		}
 	}
+
+	OnInventoryUpdated.ExecuteIfBound();
+
 	return true;
 }
 
@@ -198,6 +202,8 @@ bool UInventoryComponent::AddEquipment(FName EquipmentName)
 		}
 	}
 
+	OnInventoryUpdated.ExecuteIfBound();
+
 	return true;
 }
 
@@ -206,6 +212,12 @@ bool UInventoryComponent::AddItem(FName ItemName)
 	if (ItemName == TEXT("Money"))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::AddItem) Add Money"));
+
+		
+		AZombieSurvivalGameState* GameState = GetWorld()->GetGameState<AZombieSurvivalGameState>();
+		check(GameState);
+		GameState->AddCoin(100);
+
 		return true;
 	}
 	else if (ItemName == TEXT("Meal"))
@@ -314,4 +326,14 @@ void UInventoryComponent::RemoveIngredient(FName EvolvedWeaponName)
 			break;
 		}
 	}
+}
+
+const TArray<AWeaponBase*>& UInventoryComponent::GetWeaponArray() const
+{
+	return WeaponArray;
+}
+
+const TArray<AEquipmentBase*>& UInventoryComponent::GetEquipmentArray() const
+{
+	return EquipmentArray;
 }

@@ -9,6 +9,7 @@
 /**
  * 
  */
+class UZombieSurvivalSaveGame;
 class UDataTable;
 struct FWeaponData;
 struct FEquipmentData;
@@ -18,13 +19,16 @@ UCLASS()
 class MYPROJECT_API UZombieSurvivalGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
-
 public:
+	UZombieSurvivalSaveGame* GetSaveGame();
 	FWeaponData* GetWeaponData(FName WeaponName) const;
 	FEquipmentData* GetEquipmentData(FName EquipmentName) const;
 	FProjectileData* GetProjectileData(FName ProjectileName) const;
 	FItemData* GetItemData(FName ItemName) const;
 private:
+	// Save Game
+	UZombieSurvivalSaveGame* SaveGameInstance;
+	// Data Table
 	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))
 	UDataTable* WeaponDataTable;
 	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess))

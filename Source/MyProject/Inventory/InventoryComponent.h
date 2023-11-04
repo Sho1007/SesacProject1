@@ -43,6 +43,12 @@ public:
 	int GetItemLevel(FName ItemName);
 
 	void RemoveIngredient(FName EvolvedWeaponName);
+
+public:
+	// Getter
+	const TArray<AWeaponBase*>& GetWeaponArray() const;
+	const TArray<AEquipmentBase*>& GetEquipmentArray() const;
+
 private:
 	UPROPERTY(VisibleInstanceOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
 	TArray<AWeaponBase*> WeaponArray;
@@ -66,4 +72,10 @@ private:
 	// 아직 얻짐 못한 무기 / 장비 이름 셋
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory Component", Meta = (AllowPrivateAccess))
 	TSet<FName> NewItemNameSet;
+
+public:
+	// Delegate
+
+	DECLARE_DELEGATE(FDele_Single);
+	FDele_Single OnInventoryUpdated;
 };

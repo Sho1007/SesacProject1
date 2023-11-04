@@ -8,6 +8,7 @@
 
 class UInventoryComponent;
 class UStatusComponent;
+class UGameOverWidget;
 UCLASS()
 class MYPROJECT_API APlayerBase : public ACharacter
 {
@@ -31,11 +32,19 @@ public:
 	UFUNCTION()
 	void OnCapsuleComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION(BlueprintCallable)
+	void Die();
+
 public:
+	UFUNCTION(BlueprintCallable)
 	void AddExp(float NewExp);
 	void LevelUp();
 
 protected:
+	// GameOver
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameOverWidget> GameOverWidgetClass;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float CurrentExp;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

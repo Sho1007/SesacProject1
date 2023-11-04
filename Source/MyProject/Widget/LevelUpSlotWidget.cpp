@@ -35,7 +35,7 @@ void ULevelUpSlotWidget::Init(FName NewItemName)
 	}
 	else if (FEquipmentData* EquipmentData = GameInstance->GetEquipmentData(ItemName))
 	{
-		Img_ItemImage->SetBrushFromTexture(EquipmentData->EqiupmentImage);
+		Img_ItemImage->SetBrushFromTexture(EquipmentData->EquipmentImage);
 		//Img_ItemImage->SetDesiredSizeOverride(FVector2D(100, 100));
 		Txt_ItemName->SetText(EquipmentData->EquipmentName);
 		Txt_ItemDiscription->SetText(EquipmentData->DiscriptionTextArray[ItemLevel]);

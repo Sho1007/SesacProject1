@@ -3,10 +3,24 @@
 
 #include "ZombieSurvivalGameInstance.h"
 
+#include <Kismet/GameplayStatics.h>
+
 #include "ObjectPooling/ProjectileBase.h"
 #include "Weapon/WeaponBase.h"
 #include "Weapon/EquipmentBase.h"
 #include "ObjectPooling/ItemBase.h"
+#include "SaveGame/ZombieSurvivalSaveGame.h"
+
+UZombieSurvivalSaveGame* UZombieSurvivalGameInstance::GetSaveGame()
+{
+	if (SaveGameInstance == nullptr)
+	{
+		SaveGameInstance = Cast<UZombieSurvivalSaveGame>(UGameplayStatics::CreateSaveGameObject(UZombieSurvivalSaveGame::StaticClass()));
+		SaveGameInstance = Cast<UZombieSurvivalSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveGameInstance->GetSaveSlotName(), SaveGameInstance->GetUserIndex()));
+	}
+
+	return SaveGameInstance;
+}
 
 FWeaponData* UZombieSurvivalGameInstance::GetWeaponData(FName WeaponName) const
 {

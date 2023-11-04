@@ -9,9 +9,10 @@
 #include "Components/CapsuleComponent.h"
 #include "../PlayerController/InGamePlayerController.h"
 #include "MyProject/ObjectPooling/BossBoxBase.h"
+#include "../Widget/GameOverWidget.h"
 
 // Sets default values
-APlayerBase::APlayerBase() : CurrentExp(0.0f), MaxExp(100.0f), CurrentLevel(1)
+APlayerBase::APlayerBase() : CurrentExp(0.0f), MaxExp(10.0f), CurrentLevel(1)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -53,6 +54,14 @@ void APlayerBase::OnCapsuleComponentBeginOverlap(UPrimitiveComponent* Overlapped
 	OtherActor->Destroy();
 }
 
+void APlayerBase::Die()
+{
+	check(GameOverWidgetClass);
+
+	UGameOverWidget* GameOverWidget = CreateWidget<UGameOverWidget>(GetController<APlayerController>(), GameOverWidgetClass);
+	GameOverWidget->AddToViewport();
+}
+
 void APlayerBase::AddExp(float NewExp)
 {
 	CurrentExp += NewExp;
@@ -62,7 +71,7 @@ void APlayerBase::AddExp(float NewExp)
 
 		CurrentLevel++;
 
-		MaxExp = CurrentLevel * 50.0f;
+		MaxExp = CurrentLevel * 10.0f;
 
 		LevelUp();
 
